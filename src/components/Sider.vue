@@ -21,7 +21,7 @@ export default {
         {title: '证件照', router: '/photo',  icon: 'ios-images-outline'},
         {title: '日历', router: '/calcendar',  icon: 'ios-calendar-outline'},
         {title: '图表', router: '/echarts',  icon: 'ios-stats-outline'},
-        {title: '实时地铁图', router: '/subway', icon: 'ios-train'},
+        // {title: '实时地铁图', router: '/subway', icon: 'ios-train'},
         {title: '文件读取', router: '/file', icon: 'ios-paper-outline'},
         {title: '测试',router: '/test', icon: 'ios-bug-outline'},
         {title: 'canvas地铁', router: '/map', icon: 'md-train'},

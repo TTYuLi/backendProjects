@@ -14,14 +14,13 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "@svgdotjs/svg.panzoom.js": "^2.0.3",
     "iview": "^3.5.1",
     "jquery": "^3.4.1",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.15",
     "save-dev": "0.0.1-security",
-    "svg.draggable.js": "^3.0.0",
+    "svg.draggable.js": "^2.2.2",
     "svg.pan-zoom.js": "^2.8.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"

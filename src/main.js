@@ -7,9 +7,8 @@ import 'jquery'
 
 import svgJs from './utils/svg'
 Vue.use(svgJs)
-// import svg from 'svg.js'
-// Vue.prototype.$svg = svg
-// import '@svgdotjs/svg.panzoom.js'
+
+// import 'svg.draggable.js'
 
 import iview from 'iview'
 import 'iview/dist/styles/iview.css';

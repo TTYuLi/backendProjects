@@ -4,6 +4,7 @@
     <Button @click="select_circle">点击框选车站</Button>
     <Button @click="drag">点击拖拽</Button>
     <div id="svg_subway" class="draw" ></div>
+    <div id="svg_dragbox" ></div>
   </div>
 </template>
 
@@ -16,6 +17,7 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
         draw: null,
         group: null,
         path: null,
+        panZoomTiger: null,
         s_cx: null,
         s_cy: null,
         e_cx: null,
@@ -23,15 +25,62 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
       }
     },
     methods: {
+      dragBox(){
+        var draw_box = this.$svg('svg_dragbox').size(800, 600).addClass('box')
+          var rect1 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(10,10)
+          var rect2 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(220,10)
+          var rect3 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(440,10)
+
+          var path_str1 = 'M60 110 L60 200 z'
+          var path1 = draw_box.path(path_str1).fill('#fff').stroke({color: 'blue'})
+          var path_str2 = 'M270 110 L60 200 z'
+          var path2 = draw_box.path(path_str2).fill('#fff').stroke({color: 'blue'})
+
+          var rect4 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(10,200)
+          var rect5 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(220,200)
+          // var rect6 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(440,200)
+
+
+          // beforedrag (cancelable)
+          // dragstart
+          // dragmove (cancelable)
+          // dragend
+
+          // rect4.draggable()   
+          rect5.draggable()
+          // 用到 svg.draggable.js 拖拽事件 文档：https://github.com/svgdotjs/svg.draggable.js  npm i svg.draggable.js@2.2.2
+
+          // react5绑定事件
+          rect5.on('dragstart.abs', function (event) {
+            console.log(event)
+            // event.detail.event hold the given data explained below
+            // this == rect
+          })
+
+          // unbind
+          // rect.off('dragstart.abs')
+
+
+          rect4.draggable().on('dragmove', (e) => {
+            path_str1 =  'M60 110 L' + (rect4.attr('x') + 50 )+ ' ' + (rect4.attr('y') - 0) + ' z'
+            path_str2 =  'M270 110 L' + (rect4.attr('x') + 50 )+ ' ' + (rect4.attr('y') - 0) + ' z'
+            // console.log(e, rect4.attr('x'), rect4.attr('y'), path_str1)
+
+            path1.attr({d: path_str1})
+            path2.attr({d: path_str2})
+            // e.preventDefault() // 取消拖拽移动事件
+            // e.detail.handler.move(100, 200)
+            // events are still bound e.g. dragend will fire anyway
+          })
+      },
       drawLine(lines) {
 
         // 开始画线
-        this.draw = this.$svg('svg_subway').size(800, 600)
+        this.draw = this.$svg('svg_subway').size(800, 600).addClass('subway')
         // var draw = SVG('svg_subway').size(800, 600)
         var group = this.draw.group();
         this.group = group;
         for(var i = 0; i < lines.length; i++) {
-            // console.log( lines[i])
 
             var { l_xmlattr, p } = lines[i]   // p： 线内站点信息
             var { lb, loop, uid } = l_xmlattr  // 地铁线信息
@@ -75,9 +124,10 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
             var path = group.path(dStr)
             this.path = path;
             path.fill('none')
-            path.stroke({ color: lineColor, width: 4, linecap: 'round', linejoin: 'round' }).click(function() {
-              this.stroke({ width: 8})
-            })
+            path.stroke({ color: lineColor, width: 4, linecap: 'round', linejoin: 'round' })
+            // .click(function() {
+            //   this.stroke({ width: 8})
+            // })
         }
 
         
@@ -98,12 +148,14 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
                     if(ex) {
                       // 换乘站
                         if (!repeatStr.includes(uid)) {
-                          var image = group.image(imgSrc)
+                          var image = group.image(imgSrc).attr({name: lb}).addClass('point')
                           image.size(16, 16).move(x - 8, y - 8)
                       }
                     } else {
                       // 非换成站 
-                      var circle = group.circle(8).fill('#fff').stroke({color: "#" + l_xmlattr.lc.split("x")[1]}).move(x-4, y-4)
+                      var station_point = group.circle(8).fill('#fff')
+                      .stroke({color: "#" + l_xmlattr.lc.split("x")[1]}).addClass('point')
+                      .move(x-4, y-4).attr({name: lb})
                     }
 
                     // 未重复的换成车站名
@@ -128,69 +180,140 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
 
         // this.select_circle();
           // 将这个组的svg 图缩小并放置在中间
-          // group.scale(0.4, 0.4).translate(400, 300)
-          // draw.viewbox(-400, -300, 1600, 1200)
+          // group.scale(0.4, 0.4).translate(400, 300) 
+          // this.draw.viewbox(-800, -600, 1600, 1200)
           
-          // 设置 鼠标滚轮实现放大和缩小 ， 需要引入svg.pan-zoom.js
+          // 设置 鼠标滚轮实现放大和缩小 ， 需要引入svg.pan-zoom.js,  配置参考 https://www.npmjs.com/package/svg-pan-zoom
           // group.panZoom()
-          group.panZoom({zoom: [0.1, 3], zoomSpeed: 1});
+          // group.panZoom({zoom: [0.1, 3], zoomSpeed: 1}).setPosition(-800, -600, 10);
+          // group.panZoom({zoom: [0.1, 3], zoomSpeed: 1});
 
-          // 设置鼠标平移拖拽， 需要引入 svg.draggable.js
-          path.draggable()
-          // path.draggable({  minX: 10
-          //                 , minY: 15
-          //                 , maxX: 200
-          //                 , maxY: 100})
-  
- 
+          // this.draw.panZoom({zoom: [0.1, 3], zoomSpeed: 1});
+
+          // 获取方法实例
+          this.panZoomTiger = svgPanZoom('.subway');
+          this.panZoomTiger.zoom(1)
+
+          // svgPanZoom("svg", {  
+          //   viewportSelector: '.svg-pan-zoom_viewport'
+          // , panEnabled: true
+          // , controlIconsEnabled: false
+          // , zoomEnabled: true
+          // , dblClickZoomEnabled: true
+          // , mouseWheelZoomEnabled: true
+          // , preventMouseEventsDefault: true
+          // , zoomScaleSensitivity: 0.2
+          // , minZoom: 0.1
+          // , maxZoom: 3
+          // , fit: true
+          // , contain: false
+          // , center: true
+          // , refreshRate: 'auto'
+          // , beforeZoom: function(){}
+          // , onZoom: function(){}
+          // , beforePan: function(){}
+          // , onPan: function(){}
+          // , onUpdatedCTM: function(){}
+          // // , customEventsHandler: {}
+          // // , eventsListenerElement: null
+          //   })
 
 
         // this.select_circle(group)  
       },
       drag(){
-        this.path.draggable();
+         // 开启平移和缩放
+        this.panZoomTiger.enablePan()  
+        this.panZoomTiger.enableZoom()
       },
       select_circle(){
+
+             
+        // 禁用平移和缩放
+        this.panZoomTiger.disablePan()  
+        this.panZoomTiger.disableZoom()
         // 让鼠标指针变成 十字架形态  matrix(0.4,0,0,0.4,402,314)
-        this.path.draggable(false)
-
+        var circle;  
         $('#svg_subway').css({cursor: 'crosshair'})
-          this.draw.mousedown((e)=> {
-            console.log(e, this.group.attr())
-            // let transformValueStr = this.group.attr('transform').substring(7,this.group.attr('transform').length -1)
-            // let scale_x = transformValueStr.split(',')[0]
-            // let scale_y = transformValueStr.split(',')[3]
-            // let translate_x = transformValueStr.split(',')[4]
-            // let translate_y = transformValueStr.split(',')[5]
 
-            this.s_x = e.offsetX
-            this.s_y = e.offsetY
-            var circle = 
-            this.draw.ellipse(60, 60).fill('transparent').stroke({ color: '#f06'}).addClass('select-circle')
-              // .attr({'rx':  0, 'ry': 0, 'cx':this.s_x - translate_x, 'cy': this.s_y - translate_y,})
-              .attr({'rx':  0, 'ry': 0, 'cx':this.s_x , 'cy': this.s_y ,})
+        this.draw.mousedown((e)=> {
+            // console.log(e, this.group.attr('transform'))
+            // 计算坐标
+            let transformValueStr = this.group.attr('transform').substring(7,this.group.attr('transform').length -1)
+            let scale_x = transformValueStr.split(',')[0]
+            let scale_y = transformValueStr.split(',')[3]
+            let translate_x = transformValueStr.split(',')[4]
+            let translate_y = transformValueStr.split(',')[5]
 
-            // circle.panZoom({zoom: [0.1, 3], zoomSpeed: 1})
-            // this.group.add(circle)
+            this.s_x = (e.offsetX  - translate_x  ) / scale_x
+            this.s_y = (e.offsetY  - translate_y  ) / scale_y
+ 
+
+            // console.log( this.s_x, this.s_y)
+            
+            circle = this.draw.ellipse(10, 10)
+             .fill('transparent').stroke({ color: '#f06'}).addClass('select-circle')
+             .move(this.s_x-15, this.s_y - 15)
+
+            this.group.add(circle)
+
             this.draw.mousemove((e) => {
-              this.m_x = e.offsetX
-              this.m_y = e.offsetY
+
+              let transformValueStr = this.group.attr('transform').substring(7,this.group.attr('transform').length -1)
+              let scale_x = transformValueStr.split(',')[0]
+              let scale_y = transformValueStr.split(',')[3]
+              let translate_x = transformValueStr.split(',')[4]
+              let translate_y = transformValueStr.split(',')[5]
+
+              this.m_x =  (e.offsetX  - translate_x  ) / scale_x
+              this.m_y =  (e.offsetY  - translate_y  ) / scale_y
+ 
               $('.select-circle')
               // .animate({ ease: '<', delay: '1.5s' })
-              .attr({'rx': Math.abs(this.m_x-this.s_x) /2, 'ry': Math.abs(this.m_y-this.s_y) /2, 'cx':this.m_x -5 , 'cy': this.m_y-5})
+              circle
+              .attr({'rx': Math.abs(this.m_x-this.s_x) /2, 'ry': Math.abs(this.m_y-this.s_y) /2, 'cx':this.m_x - 15 , 'cy': this.m_y - 15 })
 
               this.draw.mouseup((e)=>{
-                this.e_x = e.offsetX
-                this.e_y = e.offsetY  
-                $('.select-circle').attr({'rx': Math.abs(this.e_x-this.s_x) / 2, 'ry': Math.abs(this.e_x-this.s_x) / 2, 'cx': this.e_x, 'cy': this.e_y})
-                this.draw.off()
-                 $('#svg_subway').css({cursor: 'default'})
+
+                let transformValueStr = this.group.attr('transform').substring(7,this.group.attr('transform').length -1)
+                let scale_x = transformValueStr.split(',')[0]
+                let scale_y = transformValueStr.split(',')[3]
+                let translate_x = transformValueStr.split(',')[4]
+                let translate_y = transformValueStr.split(',')[5]
+
+                this.e_x =  (e.offsetX  - translate_x  ) / scale_x
+                this.e_y =  (e.offsetY  - translate_y  ) / scale_y
+
+               circle.attr({'rx': Math.abs(this.e_x-this.s_x) / 2, 'ry': Math.abs(this.e_x-this.s_x) / 2, 'cx': this.e_x - 15, 'cy': this.e_y - 15})
+              
+              // 销毁所有事件
+              this.draw.off()
+
+                $('#svg_subway').css({cursor: 'default'})
+
+                console.log( circle.attr(), $('.point')[0].getAttribute('cx'), )
+                let points = []
+
+                var pointsHtml =  $('.point')
+                for(var i = 1; i < pointsHtml.length; i++) {
+                  points.push({cx: pointsHtml[i].getAttribute('cx'), cy: pointsHtml[i].getAttribute('cy'), s_name: pointsHtml[i].getAttribute('name')})
+                }
+                
+                console.log(points)
+                // $('circle').map(v => {
+                //   console.log(v.attributes[2].value)
+                // })
+                var circle_cx = circle.attr('cx')                                                         
+                var circle_cy = circle.attr('cy')
+                var circle_rx = circle.attr('rx')
+                var circle_rx = circle.attr('ry')
+
+                 
+                
               })
  
             })
           })
-          
-          
        
       },
       init(){
@@ -208,21 +331,27 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
      },
     created () {
     },
+    destroyed(){
+      // 销毁 panZoomTiger 实例
+      this.panZoomTiger.destroy()
+    },
     computed: {
       
     },
     mounted () {
       this.init();
+      this.dragBox()
        
     },
   }
 </script>
 
 <style scoped>
-  .draw {
+  .draw, #svg_dragbox {
     border: 2px solid #ccc;
     border-radius: 6px;
     user-select: none;
     width: 800px;
+    margin-top: 10px;
   }
 </style>

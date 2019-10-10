@@ -4,7 +4,7 @@ import OverView from '@/Pages/OverView'
 
 import Photo from '@/Pages/Photo'
 import Calendar from '@/Pages/Calendar'
-import Subway from '@/Pages/Subway'
+// import Subway from '@/Pages/Subway'
 import File from '@/Pages/File'
 // import Txt from '@/Pages/1.txt'
 import Test from '@/Pages/Test'
@@ -20,7 +20,7 @@ const Routes = [
   { path: '/photo', title: '证件照', name: 'photo', component: Photo },
   { path: '/calcendar', title: '日历', name: 'calcendar', component: Calendar} ,
   { path: '/echarts', title: '图表', name: 'echarts'},
-  { path: '/subway', title: '实时地铁图', name: 'subway', component: Subway},
+  // { path: '/subway', title: '实时地铁图', name: 'subway', component: Subway},
   { path: '/file', title: '文件读取', name: 'file', component: File},
   // { path: '/txt', title: '文件读取', name: 'txt', component: Txt},
   { path: '/test', title: '测试', name: 'test', component: Test},
