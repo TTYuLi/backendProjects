@@ -18,6 +18,7 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
         group: null,
         path: null,
         panZoomTiger: null,
+        selectedPoints: null,
         s_cx: null,
         s_cy: null,
         e_cx: null,
@@ -31,15 +32,52 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
           var rect2 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(220,10)
           var rect3 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(440,10)
 
-          var path_str1 = 'M60 110 L60 200 z'
-          var path1 = draw_box.path(path_str1).fill('#fff').stroke({color: 'blue'})
-          var path_str2 = 'M270 110 L60 200 z'
-          var path2 = draw_box.path(path_str2).fill('#fff').stroke({color: 'blue'})
+          // var path_str1 = 'M60 110 L60 200 z'
+          // var path1 = draw_box.path(path_str1).fill('#fff').stroke({color: 'blue'})
+          // var path_str2 = 'M270 110 L60 200 z'
+          // var path2 = draw_box.path(path_str2).fill('#fff').stroke({color: 'blue'})
 
-          var rect4 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(10,200)
-          var rect5 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(220,200)
+
+          var path_str3 = 'M270 110 L60 300 z'
+          var path3 = draw_box.path(path_str3).fill('#fff').stroke({color: 'blue'})
+          var path_str4 = 'M270 110 L270 300 z'
+          var path4 = draw_box.path(path_str4).fill('#fff').stroke({color: 'blue'})
+          var path_str5 = 'M270 110 L390 300 z'
+          var path5 = draw_box.path(path_str5).fill('#fff').stroke({color: 'blue'})
+          var path_str6 = 'M270 110 L510 300 z'
+          var path6 = draw_box.path(path_str6).fill('#fff').stroke({color: 'blue'})
+
+
+
+
+
+
+          // var rect4 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(10,200)
+          // var rect5 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(220,200)
+
+          var image1 = draw_box.image(require('../assets/imgs/svg/fuwuqi.png')).move(10,300).size(100, 100)
+          var image2 = draw_box.image(require('../assets/imgs/svg/ip.png')).move(220,300).size(100, 100)
+          var image3 = draw_box.image(require('../assets/imgs/svg/jiaohuanji.png')).move(340,300).size(100, 100)
+          var image4 = draw_box.image(require('../assets/imgs/svg/yangshengqi.png')).move(460,300).size(100, 100)
+            
           // var rect6 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(440,200)
 
+          image1.draggable().on('dragmove', (e) => {
+            path_str3 =  'M270 110 L' + (image1.attr('x') + 50 )+ ' ' + (image1.attr('y') - 0) + ' z'
+            path3.attr({d: path_str3})
+          })
+           image2.draggable().on('dragmove', (e) => {
+            path_str4 =  'M270 110 L' + (image2.attr('x') + 50 )+ ' ' + (image2.attr('y') - 0) + ' z'
+            path4.attr({d: path_str4})
+          })
+           image3.draggable().on('dragmove', (e) => {
+            path_str5 =  'M270 110 L' + (image3.attr('x') + 50 )+ ' ' + (image3.attr('y') - 0) + ' z'
+            path5.attr({d: path_str5})
+          })
+           image4.draggable().on('dragmove', (e) => {
+            path_str6 =  'M270 110 L' + (image4.attr('x') + 50 )+ ' ' + (image4.attr('y') - 0) + ' z'
+            path6.attr({d: path_str6})
+          })
 
           // beforedrag (cancelable)
           // dragstart
@@ -47,31 +85,31 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
           // dragend
 
           // rect4.draggable()   
-          rect5.draggable()
+          // rect5.draggable()
           // 用到 svg.draggable.js 拖拽事件 文档：https://github.com/svgdotjs/svg.draggable.js  npm i svg.draggable.js@2.2.2
 
           // react5绑定事件
-          rect5.on('dragstart.abs', function (event) {
-            console.log(event)
-            // event.detail.event hold the given data explained below
-            // this == rect
-          })
+          // rect5.on('dragstart.abs', function (event) {
+          //   console.log(event)
+          //   // event.detail.event hold the given data explained below
+          //   // this == rect
+          // })
 
           // unbind
           // rect.off('dragstart.abs')
 
 
-          rect4.draggable().on('dragmove', (e) => {
-            path_str1 =  'M60 110 L' + (rect4.attr('x') + 50 )+ ' ' + (rect4.attr('y') - 0) + ' z'
-            path_str2 =  'M270 110 L' + (rect4.attr('x') + 50 )+ ' ' + (rect4.attr('y') - 0) + ' z'
-            // console.log(e, rect4.attr('x'), rect4.attr('y'), path_str1)
+          // rect4.draggable().on('dragmove', (e) => {
+          //   path_str1 =  'M60 110 L' + (rect4.attr('x') + 50 )+ ' ' + (rect4.attr('y') - 0) + ' z'
+          //   path_str2 =  'M270 110 L' + (rect4.attr('x') + 50 )+ ' ' + (rect4.attr('y') - 0) + ' z'
+          //   // console.log(e, rect4.attr('x'), rect4.attr('y'), path_str1)
 
-            path1.attr({d: path_str1})
-            path2.attr({d: path_str2})
-            // e.preventDefault() // 取消拖拽移动事件
-            // e.detail.handler.move(100, 200)
-            // events are still bound e.g. dragend will fire anyway
-          })
+          //   path1.attr({d: path_str1})
+          //   path2.attr({d: path_str2})
+          //   // e.preventDefault() // 取消拖拽移动事件
+          //   // e.detail.handler.move(100, 200)
+          //   // events are still bound e.g. dragend will fire anyway
+          // })
       },
       drawLine(lines) {
 
@@ -148,8 +186,13 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
                     if(ex) {
                       // 换乘站
                         if (!repeatStr.includes(uid)) {
-                          var image = group.image(imgSrc).attr({name: lb}).addClass('point')
-                          image.size(16, 16).move(x - 8, y - 8)
+                          var image = group.image(imgSrc).attr({name: lb}).addClass('trans')
+                          image.size(16, 16).move(x - 8, y - 8).mouseover(function(){
+                            this
+                            .size(30, 30)
+                            // .scale(1.5,1,5)
+                            .animate({ ease: '<', delay: '0.5s', loops: true, reversing: true }).rotate(360).reverse()
+                          })
                       }
                     } else {
                       // 非换成站 
@@ -293,12 +336,27 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
 
                 console.log( circle.attr(), $('.point')[0].getAttribute('cx'), )
                 let points = []
-
+                // 非换乘点
                 var pointsHtml =  $('.point')
                 for(var i = 1; i < pointsHtml.length; i++) {
-                  points.push({cx: pointsHtml[i].getAttribute('cx'), cy: pointsHtml[i].getAttribute('cy'), s_name: pointsHtml[i].getAttribute('name')})
+                  points.push({
+                    cx: pointsHtml[i].getAttribute('cx'), 
+                    cy: pointsHtml[i].getAttribute('cy'), 
+                    s_name: pointsHtml[i].getAttribute('name'),
+                    type: 'point'
+                  })
                 }
-                
+
+                //换乘点
+                var tansHtml = $('.trans')
+                for(var i = 1; i < tansHtml.length; i++) {
+                  points.push({
+                    cx: tansHtml[i].getAttribute('x'), 
+                    cy: tansHtml[i].getAttribute('y'), 
+                    s_name: tansHtml[i].getAttribute('name'),
+                    type: 'trans'
+                  })
+                }
                 console.log(points)
                 // $('circle').map(v => {
                 //   console.log(v.attributes[2].value)
@@ -307,7 +365,21 @@ const imgSrc = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4
                 var circle_cy = circle.attr('cy')
                 var circle_rx = circle.attr('rx')
                 var circle_rx = circle.attr('ry')
-
+                this.selectedPoints = []
+                points.map(v => {
+                  let a = (v.cx - circle_cx) *  (v.cx - circle_cx) +  (v.cy - circle_cy) * (v.cy - circle_cy)  // 距离平方
+                  let b;
+                  if (v.type === 'point') {
+                    b = circle_rx + 4 // 两个圆的半径和
+                  } else {
+                    b = circle_rx // 圆圈的半径
+                  }
+                  var d = Math.sqrt(a) - b
+                  if (d <= 0) {
+                    console.log(d)
+                    console.log(v.s_name)
+                  }
+                })
                  
                 
               })
