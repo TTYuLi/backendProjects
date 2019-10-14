@@ -1,6 +1,24 @@
 <template>
   <div>
+     <Select v-model="value" style="width:400px; margin-right: 20px;" label-in-value multiple @on-change="change">
+        <Option 
+          v-for="item in types" 
+          :label="item.label"
+          :value="item.value" 
+          :key="item.value" 
+         >
+          <img style="height: 25px; margin-right: 10px;" :src="item.value"/>
+          <span>{{ item.label }}</span>
+        </Option>
+    </Select>
+    <Button type="primary" @click="add">添加</Button>
     <div id="svg_dragbox" ></div>
+    
+    <div id="menu">
+        <p id="start" @click="start()">设为起点</p>
+        <p id="end" @click="end()">设为终点</p>
+        
+    </div>
   </div>
 </template>
 
@@ -8,16 +26,83 @@
   export default {
     data(){
       return {
-        
+        value: [],
+        types:[
+          {label: 'IP', value: require('../assets/imgs/svg/ip.png')},
+          {label: '服务器', value: require('../assets/imgs/svg/fuwuqi.png')},
+          {label: '交换机', value: require('../assets/imgs/svg/jiaohuanji.png')},
+          {label: '扬声器', value: require('../assets/imgs/svg/yangshengqi.png')},
+        ],
+        draw: null,
+        pathStr: null,
+        currentId: '',
+        currentPath: null,
+        images: {}
       }
     },
     methods: {
+      change(data){
+        // data.map((v, i) => {
+        //   let url = v.value
+        //   this.drawImage(url, i)
+        // })
+        console.log(data)
+      },
+      add(){
+        this.value.map((v, i) => {
+          let url = v
+          this.drawImage(url, i)
+        })
+      },
+      drawImage(url, i){
+        let img1 = this.draw.image(url).size(60, 60).move( (60 * i + 60 * i), 20).addClass('img1').attr({'s': '', 'e': ''})
+        img1.draggable()
+        .on('dragmove', function(e) {
+          
+          console.log(this)
+        })
+       
+       
+      },
+      start(){
+        
+        $("#menu").hide();
+          this.pathStr = 'M' + ( Number($('#' +this.currentId).attr('x')) + 30)+ ',' + (Number($('#' + this.currentId).attr('y')) + 60) + ''
+          this.currentPath = this.draw.path( this.pathStr + 'Z').stroke({color: 'blue'}).fill('#fff')
+          $('#' +this.currentId).attr({'connection': ''})
+
+          let id = this.currentPath.attr('id')
+          
+          let connections = $('#' +this.currentId).attr('connection')
+          console.log( $('#' +this.currentId)) 
+          // if (connections){
+          //   connections = connections + ',' + id
+          // }
+          // console.log(connections,  $('#' +this.currentId).attr())
+          //  $('#' +this.currentId).attr({'connection': connections})
+      },
+      end(){
+        $("#menu").hide();
+        // console.log( this.pathStr)
+          this.pathStr =  this.pathStr + ' L' +( 30 +  Number($('#' + this.currentId).attr('x')) ) + ',' +  Number($('#' + this.currentId).attr('y')) +' Z'
+        // console.log( this.pathStr)
+        this.currentPath.attr({d: this.pathStr})
+          // let path = this.draw.path(this.pathStr).stroke({color: 'blue'}).fill('#fff')
+
+          let id = this.currentPath.attr('id')
+          let connections = $('#' +this.currentId).attr('connection')
+          if (connections){
+
+            connections = connections + ',' + id
+          }
+           $('#' +this.currentId).attr({'connection': connections})
+      },
       dragBox(){
         var draw_box = this.$svg('svg_dragbox').size(800, 600).addClass('box')
           // var rect1 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(10,10)
 
           // var rect2 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(220,10)
-          var rect2 = draw_box .image(require('../assets/imgs/svg/ip.png')).move(220,10).size(100, 100)
+          var rect2 = draw_box.image(require('../assets/imgs/svg/ip.png')).move(220,10).size(100, 100)
          
           // var rect3 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(440,10)
 
@@ -130,7 +215,32 @@
       
     },
     mounted () {
-      this.dragBox()
+      
+      this.draw =  this.$svg('svg_dragbox').size(800, 600).addClass('box')
+      document.oncontextmenu = function(e){
+              return false;
+      }
+
+      $('.box').mousedown((e)=>{
+        console.log(e.target, $(e.target).attr('id'))
+        this.currentId = $(e.target).attr('id')
+          if(e.which == 3){  // 1 = 鼠标左键; 2 = 鼠标中键; 3 = 鼠标右键
+              var x = e.originalEvent.x || e.originalEvent.layerX || 0;
+              var y = e.originalEvent.y || e.originalEvent.layerY || 0;
+              $("#menu").css({
+                  left: x + "px",
+                  top: y + "px",
+                  display: 'block'
+              });
+              $("#menu").show();
+          }
+          if(e.which == 1){  //如果鼠标左键点下，则隐藏右键菜单
+              $("#menu").hide();
+          }
+      })
+
+ 
+      // this.dragBox()
        
     },
   }
@@ -143,5 +253,20 @@
     user-select: none;
     width: 800px;
     margin-top: 10px;
+  }
+  #menu {
+    position: absolute;
+    display: none;
+    cursor: pointer;
+    border: 1px solid #e3e3e3;
+    /* padding: 5px 10px; */
+    border-radius: 6px;
+    background: #fff;
+  }
+  #menu p {
+    padding: 4px 10px;
+  }
+  #menu p:hover {
+    background: azure;
   }
 </style>

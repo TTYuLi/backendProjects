@@ -3,7 +3,7 @@ import svgJS from 'svg.js'
 import 'svg.pan-zoom.js'
 import 'svg.draggable.js'
 // import 'svg.draggy.js'
-// import 'svg.select.js'
+import 'svg.select.js'
 // import 'svg.resize.js'
 
 // import '@svgdotjs/svg.panzoom.js'

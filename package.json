@@ -22,6 +22,7 @@
     "save-dev": "0.0.1-security",
     "svg.draggable.js": "^2.2.2",
     "svg.pan-zoom.js": "^2.8.0",
+    "svg.select.js": "^3.0.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
