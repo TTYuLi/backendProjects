@@ -35,19 +35,19 @@
         ],
         datas: [
           {
-            source: { name: '服务器', image_url:require('../assets/imgs/svg/fuwuqi.png'), x: 300, y: 20},
+            source: { name: '服务器', image_url:require('../assets/imgs/svg/fuwuqi.png'), x: 300, y: 20, elementId:1},
             targets: [
-              { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 150},
-              { name: 'IP', image_url:require('../assets/imgs/svg/ip.png'), x: 200, y: 150},
-              { name: '扬声器', image_url:require('../assets/imgs/svg/yangshengqi.png'), x: 400, y: 150},
+              { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 150, elementId:2},
+              { name: 'IP', image_url:require('../assets/imgs/svg/ip.png'), x: 200, y: 150, elementId:3},
+              { name: '扬声器', image_url:require('../assets/imgs/svg/yangshengqi.png'), x: 400, y: 150, elementId:4},
             ]
           },
            {
-            source: { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 150},
+            source: { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 150, elementId:2},
             targets: [
-              // { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 300},
-              // { name: 'IP', image_url:require('../assets/imgs/svg/ip.png'), x: 200, y: 300},
-              { name: '扬声器', image_url:require('../assets/imgs/svg/yangshengqi.png'), x: 400, y: 300},
+              // { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 300, elementId:1},
+              // { name: 'IP', image_url:require('../assets/imgs/svg/ip.png'), x: 200, y: 300, elementId:1},
+              { name: '扬声器', image_url:require('../assets/imgs/svg/yangshengqi.png'), x: 400, y: 300, elementId:2},
             ]
           },
         ],
@@ -86,27 +86,44 @@
 
         // 创建箭头
         var arrow = this.draw.marker( 12, 12, function(add) {
-          add.path('M2,2 L2,11 L10,6 L2,2').stroke({color: '#66'})
+          add.path('M2,2 L2,11 L10,6 L2,2').stroke({color: '#666'})
         }).attr({orient: 'auto'})
+        // 创建文字 标记
        
-       
-        this.datas.map(v => {
+          let group3 = this.draw.group();
+        this.datas.map((v,i) => {
+          let group1 = this.draw.group();
           console.log(v)
-        let group1 = this.draw.group();
           // 画图片
-         let img = group1.image(v.source.image_url).size(60,60).move(v.source.x, v.source.y)
+         let img = group1.image(v.source.image_url).size(60,60).move(v.source.x, v.source.y).addClass('img'+i)
          let title = group1.text(v.source.name).font({ fill: '#333', family: '黑体', size: 18 }).move(v.source.x,v.source.y+ 65)
           group1.draggable()
 
-        let pathStr = 'M' + (v.source.x + 30)+ ',' +  (v.source.y + 85)
-         v.targets.map(target => {
+        // let pathStr = 'M' + (v.source.x + 30)+ ',' +  (v.source.y + 85)
+         v.targets.map((target, index) => {
           let group2 = this.draw.group().draggable();
-          let img = group2.image(target.image_url).size(60,60).move(target.x, target.y)
+          let img = group2.image(target.image_url).size(60,60).move(target.x, target.y).addClass('target'+ index)
           let title = group2.text(target.name).font({ fill: '#333', family: '黑体', size: 18 }).move(target.x,target.y+ 65)
-          pathStr = pathStr + 'L' +(target.x +30) + ',' + target.y + 'Z'
+          // pathStr = pathStr + 'L' +(target.x +30) + ',' + target.y + 'Z'
+          let mx = this.$svg.select('image.img'+ i).members[0].attr('x')
+          let my = this.$svg.select('image.img'+ i).members[0].attr('y')
+
+          let lx = this.$svg.select('image.target'+ index).members[0].attr('x')
+          let ly = this.$svg.select('image.target'+ index).members[0].attr('y')
+        console.log(lx,ly )
+
+          // let pathStr = 'M' + (mx+ 30)+ ',' +  (my + 85) + 'L'+(lx +30) + ',' + ly + 'Z'
+          let pathStr = 'M' +  (lx +30) + ',' + ly  + 'L'+(mx+ 30)+ ',' + (my + 85) + 'Z'
+          group3.path(pathStr).stroke({color: '#666'}).marker('end', arrow)
+        
+          group1.on('dragmove', function(e) {
+            
+            console.log(this.attr())
+          })
          })
-         this.draw.path(pathStr).stroke({color: '#666'}).marker('start', arrow)
+        //  this.draw.path(pathStr).stroke({color: '#666'}).marker('start', arrow)
         })
+        console.log( this.$svg.select('image'))
       },
       change(data){
         // data.map((v, i) => {
