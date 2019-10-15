@@ -33,6 +33,25 @@
           {label: '交换机', value: require('../assets/imgs/svg/jiaohuanji.png')},
           {label: '扬声器', value: require('../assets/imgs/svg/yangshengqi.png')},
         ],
+        datas: [
+          {
+            source: { name: '服务器', image_url:require('../assets/imgs/svg/fuwuqi.png'), x: 300, y: 20},
+            targets: [
+              { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 150},
+              { name: 'IP', image_url:require('../assets/imgs/svg/ip.png'), x: 200, y: 150},
+              { name: '扬声器', image_url:require('../assets/imgs/svg/yangshengqi.png'), x: 400, y: 150},
+            ]
+          },
+           {
+            source: { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 150},
+            targets: [
+              // { name: '交换机', image_url:require('../assets/imgs/svg/jiaohuanji.png'), x: 50, y: 300},
+              // { name: 'IP', image_url:require('../assets/imgs/svg/ip.png'), x: 200, y: 300},
+              { name: '扬声器', image_url:require('../assets/imgs/svg/yangshengqi.png'), x: 400, y: 300},
+            ]
+          },
+        ],
+        links: null,
         draw: null,
         pathStr: null,
         currentId: '',
@@ -41,6 +60,54 @@
       }
     },
     methods: {
+      render(){},
+      getNodes(datas){
+        let links = datas;
+        // links.forEach(function(link) {
+        //   console.log(1,link)
+        //   link.source =  {
+        //       name: link.source,
+        //       attr: link.attr,
+        //       url:link.source_img,
+        //       elementId: link.elementId
+        //   };
+        //   link.target = {
+        //     name: link.target,
+        //     attr: link.attr,
+        //     url:link.target_img,
+        //     elementId: link.elementId
+        //   };
+        //    console.log(2,link)
+        // });
+      },
+      // 绘制树状图
+      render(){
+        // let group = this.draw.group();
+
+        // 创建箭头
+        var arrow = this.draw.marker( 12, 12, function(add) {
+          add.path('M2,2 L2,11 L10,6 L2,2').stroke({color: '#66'})
+        }).attr({orient: 'auto'})
+       
+       
+        this.datas.map(v => {
+          console.log(v)
+        let group1 = this.draw.group();
+          // 画图片
+         let img = group1.image(v.source.image_url).size(60,60).move(v.source.x, v.source.y)
+         let title = group1.text(v.source.name).font({ fill: '#333', family: '黑体', size: 18 }).move(v.source.x,v.source.y+ 65)
+          group1.draggable()
+
+        let pathStr = 'M' + (v.source.x + 30)+ ',' +  (v.source.y + 85)
+         v.targets.map(target => {
+          let group2 = this.draw.group().draggable();
+          let img = group2.image(target.image_url).size(60,60).move(target.x, target.y)
+          let title = group2.text(target.name).font({ fill: '#333', family: '黑体', size: 18 }).move(target.x,target.y+ 65)
+          pathStr = pathStr + 'L' +(target.x +30) + ',' + target.y + 'Z'
+         })
+         this.draw.path(pathStr).stroke({color: '#666'}).marker('start', arrow)
+        })
+      },
       change(data){
         // data.map((v, i) => {
         //   let url = v.value
@@ -86,7 +153,9 @@
         // console.log( this.pathStr)
           this.pathStr =  this.pathStr + ' L' +( 30 +  Number($('#' + this.currentId).attr('x')) ) + ',' +  Number($('#' + this.currentId).attr('y')) +' Z'
         // console.log( this.pathStr)
-        this.currentPath.attr({d: this.pathStr})
+        this.currentPath.attr({d: this.pathStr}).marker('start',  20, 20, function(add) {
+          add.path('M0,-5L10,0L0,5').stroke({color: '#66'}).center(12, 10)
+        })
           // let path = this.draw.path(this.pathStr).stroke({color: 'blue'}).fill('#fff')
 
           let id = this.currentPath.attr('id')
@@ -99,21 +168,29 @@
       },
       dragBox(){
         var draw_box = this.$svg('svg_dragbox').size(800, 600).addClass('box')
-          // var rect1 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(10,10)
+        var marker_arrow = draw_box.marker( 12, 12, function(add) {
+          add.path('M2,2 L2,11 L10,6 L2,2').stroke({color: '#666'})
+          
+        })
+        .attr({orient: 'auto'})
+        draw_box.path('M0,0L100,100Z').stroke({color: '#666'}).fill('#fff').move(20,20) 
+        // .marker('start', marker_arrow)
+        .marker('end', marker_arrow)
+         draw_box.path('M300,400L30,50Z').stroke({color: '#666'}).fill('#fff').move(30,20) 
+        // .marker('start', marker_arrow)
+        .marker('end', marker_arrow)
 
-          // var rect2 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(220,10)
           var rect2 = draw_box.image(require('../assets/imgs/svg/ip.png')).move(220,10).size(100, 100)
          
-          // var rect3 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(440,10)
-
-          // var path_str1 = 'M60 110 L60 200 z'
-          // var path1 = draw_box.path(path_str1).fill('#fff').stroke({color: 'blue'})
-          // var path_str2 = 'M270 110 L60 200 z'
-          // var path2 = draw_box.path(path_str2).fill('#fff').stroke({color: 'blue'})
-
+         
 
           var path_str3 = 'M270 110 L60 300 z'
           var path3 = draw_box.path(path_str3).fill('#fff').stroke({color: 'blue'})
+          path3
+          .marker('start', marker_arrow)
+        
+
+
           var path_str4 = 'M270 110 L270 300 z'
           var path4 = draw_box.path(path_str4).fill('#fff').stroke({color: 'blue'})
           var path_str5 = 'M270 110 L390 300 z'
@@ -126,15 +203,12 @@
 
 
 
-          // var rect4 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(10,200)
-          // var rect5 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(220,200)
 
           var image1 = draw_box.image(require('../assets/imgs/svg/fuwuqi.png')).move(10,300).size(100, 100)
           var image2 = draw_box.image(require('../assets/imgs/svg/ip.png')).move(220,300).size(100, 100)
           var image3 = draw_box.image(require('../assets/imgs/svg/jiaohuanji.png')).move(340,300).size(100, 100)
           var image4 = draw_box.image(require('../assets/imgs/svg/yangshengqi.png')).move(460,300).size(100, 100)
             
-          // var rect6 = draw_box.rect(100, 100).fill('#fff').stroke({color: 'blue'}).move(440,200)
 
           image1.draggable().on('dragmove', (e) => {
             path_str3 =  'M'+( rect2.attr('x') + 50 )+ ',' + (rect2.attr('y') + 100) + 'L'+ (image1.attr('x') + 50 )+ ' ' + (image1.attr('y') - 0) + ' z'
@@ -217,30 +291,32 @@
     mounted () {
       
       this.draw =  this.$svg('svg_dragbox').size(800, 600).addClass('box')
-      document.oncontextmenu = function(e){
-              return false;
-      }
+      // document.oncontextmenu = function(e){
+      //         return false;
+      // }
 
-      $('.box').mousedown((e)=>{
-        console.log(e.target, $(e.target).attr('id'))
-        this.currentId = $(e.target).attr('id')
-          if(e.which == 3){  // 1 = 鼠标左键; 2 = 鼠标中键; 3 = 鼠标右键
-              var x = e.originalEvent.x || e.originalEvent.layerX || 0;
-              var y = e.originalEvent.y || e.originalEvent.layerY || 0;
-              $("#menu").css({
-                  left: x + "px",
-                  top: y + "px",
-                  display: 'block'
-              });
-              $("#menu").show();
-          }
-          if(e.which == 1){  //如果鼠标左键点下，则隐藏右键菜单
-              $("#menu").hide();
-          }
-      })
+      // $('.box').mousedown((e)=>{
+      //   console.log(e.target, $(e.target).attr('id'))
+      //   this.currentId = $(e.target).attr('id')
+      //     if(e.which == 3){  // 1 = 鼠标左键; 2 = 鼠标中键; 3 = 鼠标右键
+      //         var x = e.originalEvent.x || e.originalEvent.layerX || 0;
+      //         var y = e.originalEvent.y || e.originalEvent.layerY || 0;
+      //         $("#menu").css({
+      //             left: x + "px",
+      //             top: y + "px",
+      //             display: 'block'
+      //         });
+      //         $("#menu").show();
+      //     }
+      //     if(e.which == 1){  //如果鼠标左键点下，则隐藏右键菜单
+      //         $("#menu").hide();
+      //     }
+      // })
 
  
       // this.dragBox()
+      // this.getNodes(this.datas)
+      this.render();
        
     },
   }
