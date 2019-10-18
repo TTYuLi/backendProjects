@@ -150,8 +150,9 @@
               :x2="connectingLine.x2" 
               :y2="connectingLine.y2" 
               v-show="connectingLine.isConnecting" 
+              marker-end="url(#arrow)"
               stroke="#666" 
-              stroke-width="3">
+              stroke-width="1">
               </line>
             </g>   
 
@@ -283,7 +284,7 @@
           {
             "id": "path1",
             "type": "Line",
-            "strokeW": 3,
+            "strokeW": 1,
             "color": "#666",
             "targetNode": {
               x: 50, 
@@ -305,7 +306,7 @@
           {
             "id": "path2",
             "type": "Line",
-            "strokeW": 3,
+            "strokeW": 1,
             "color": "#666",
             "targetNode": {
                x: 200, 
@@ -328,7 +329,7 @@
           {
             "id": "path3",
             "type": "Line",
-            "strokeW": 3,
+            "strokeW": 1,
             "color": "#666",
             "targetNode": {
               x: 400, 
@@ -351,7 +352,7 @@
           {
             "id": "path4",
             "type": "Line",
-            "strokeW": 3,
+            "strokeW": 1,
             "color": "#666",
             "targetNode": {
                x: 200, 
@@ -378,7 +379,7 @@
       }
     },
     methods: {
-      //鼠标滑过node
+      //鼠标滑过node 
       mouseoverNode(key,event){
         this.nodes[key].isTopConnectShow = true
         this.nodes[key].isBottomConnectShow = true
@@ -390,7 +391,7 @@
       getConnectLine(key){
         this.connectingLine.endNode = this.nodes[key].id 
       },
-      //鼠标划出左侧箭头时，将connectingLine.endNode再次初始化
+      //鼠标划出顶部箭头时，将connectingLine.endNode再次初始化
       mouseoutLeftConnector(key){
         this.connectingLine.endNode = ''
       },
@@ -485,7 +486,7 @@
                 let connector = {
                   id:connectorId,
                   type:connectType,
-                  strokeW:3,//仅用于Line类型,默认3
+                  strokeW:1,//仅用于Line类型,默认3
                   color:'#666', //仅用于Line类型，默认颜色
                   targetNode:{
                     x:targetNodeX,
@@ -570,7 +571,6 @@
         console.log('123',nodeStartPosArr)
 
          nodeStartPosArr.push({id:CURNODE.id,x:CURNODE.x,y:CURNODE.y})
-        // this.storeCurnodeStartPosition(CURNODE,nodeStartPosArr)  //将选择的node的子子节点初始位置保存进去
 
         this.nodes.forEach((node,key)=>{            // 关联属性设置框       
           if(node.id == CURNODE.id){
@@ -605,18 +605,8 @@
       },
       //存入node及其子节点位置信息
       storeCurnodeStartPosition(CURNODE,startNodePosition){
-        // let containNodes = CURNODE.containNodes
         startNodePosition.push({id:CURNODE.id,x:CURNODE.x,y:CURNODE.y})
-        // console.log('startNodePosition',startNodePosition)
-        // if(containNodes.length){
-        //   containNodes.forEach((nodeId,key) => {
-        //     this.nodes.forEach((ele,index) => {
-        //       if(ele.id == nodeId){
-        //         this.storeCurnodeStartPosition(ele,startNodePosition)
-        //       }
-        //     })
-        //   })
-        // }
+         
       },
       //contain情况下移动子节点位置
       moveContianNode(disX,disY,nodeStartPosArr){
@@ -666,23 +656,22 @@
             for(let i=0;i<this.nodes.length;i++){
               let node = this.nodes[i]
               if(node.isSelect){
-                this.deleteSelectNodeLink(node.id)
+                this.deleteSelectNodeLink(node.id) // 删除 与node节点的连线
                 let targetNodeId=""
                 let targetNode = null
-                this.connectors.forEach((ele,key) => {
-                  if(ele.sourceNode.id == node.id ) targetNodeId = ele.targetNode.id
-                })
-                this.deleteCurNodeContainConnector(node)
-                if(targetNodeId){
-                  this.nodes.forEach((node,index) => {
-                  if(node.id  == targetNodeId)
-                  this.refreshRowAndOuterNode(node)
-                  }) 
-                }            
-                this.nodes.splice(i,1)
+                // this.connectors.forEach((ele,key) => {
+                //   if(ele.sourceNode.id == node.id ) targetNodeId = ele.targetNode.id
+                // })
+                // this.deleteCurNodeContainConnector(node)
+                // if(targetNodeId){
+                //   this.nodes.forEach((node,index) => {
+                //   }) 
+                // }            
+                this.nodes.splice(i,1)  // 删除节点
                 //删除包含关系1.如果有父元素，恢复父元素的宽高位置
-                this.deleteCurnodeAndChildnodes(node) // 删除此节点内部所有包含的节点及其关系          
-                this.refreshNodeArrows() //刷新节点的左右箭头展示  
+                // this.deleteCurnodeAndChildnodes(node) // 删除此节点内部所有包含的节点及其关系 
+                // this.deleteCurNodeContainConnector(node)   // 删除 node节点      
+                // this.refreshNodeArrows() //刷新节点的左右箭头展示  
                 i -- 
                 if(this.nodes.length > 0){
                   this.selectNodeIndex = 
@@ -697,23 +686,7 @@
           }
         }
       },
-      //删除此节点下所有包含的所有节点
-      deleteCurnodeAndChildnodes(CURNODE){      
-        this.deleteCurNodeContainConnector(CURNODE)
-        if(CURNODE.containNodes.length){        
-          CURNODE.containNodes.forEach((containNodeId,key) => {
-            let containId =  containNodeId
-            this.nodes.forEach((ele,index)=>{
-              if(ele.id == containId) {
-                let curnode = ele
-                this.nodes.splice(index,1)
-                this.deleteSelectNodeLink(containId)
-                this.deleteCurnodeAndChildnodes(curnode) //递归删除内部所有的节点及其关系
-              }
-            })
-          })
-        }
-    },
+      
       //删除选中node的连线
     deleteSelectNodeLink(selectId){
       let connectorObjArr = this.connectors
@@ -752,7 +725,6 @@
           };
          
           this.$set(this.nodes,this.nodes.length,node)
-          // this.refreshRowAndOuterNode(node)  //刷新并列节点位置和父节点宽高 
           this.refreshConnectorsData()  
           // console.log(this.nodes)
     },
@@ -794,76 +766,8 @@
       }) 
       this.selectNodeData = {}
     },
-        //刷新父节点的宽度 及 其子节点位置
-      refreshRowAndOuterNode(TARGETNODE){
-        if(TARGETNODE.containNodes.length>0){
-          //重新计算targetnode的宽度
-          let sumWidth = 0
-          let maxHeight = 0
-          TARGETNODE.containNodes.forEach((ele,key) => {
-            let containNodeId = ele 
-            this.nodes.forEach((node,index) => {
-              if(node.id == containNodeId) {
-                sumWidth += node.width
-                if(node.height > maxHeight) maxHeight = node.height
-              }
-            })
-          })
-          sumWidth += (TARGETNODE.containNodes.length + 1) * this.containLeft
-          TARGETNODE.width = sumWidth
-          TARGETNODE.height = maxHeight + 10 + this.containTop
-          
-        }else{
-          TARGETNODE.width = TARGETNODE.initW
-          TARGETNODE.height = TARGETNODE.initH
-          
-        }
-        this.connectors.forEach((ele,key) => {
-          let parentNodeId = ""
-          let parentNode={}
-          if(ele.sourceNode.id == TARGETNODE.id && ele.type=="Contain"){
-            parentNodeId = ele.targetNode.id
-            this.nodes.forEach((node,key) => {
-              if(node.id == parentNodeId)  this.refreshRowAndOuterNode(node)
-            })
-          }
-        })
-        //重新计算每个containNode的位置
-      // this.refreshContainNodesPosition(TARGETNODE)
-      },
-      //计算每个containNode的位置
-      refreshContainNodesPosition(TARGETNODE){
-        TARGETNODE.containNodes.forEach((ele,key) =>{    
-          let containNodeId =ele
-          let containNode 
-          let preNode
-          this.nodes.forEach((node,index) => {
-            if(node.id == containNodeId) {
-              containNode = node                          
-            }
-          })
-          if(key == 0){
-            this.refreshRowNodesPosition(TARGETNODE,containNode,null) 
-          }else{
-            let preNodeIndex = key - 1
-            let preNodeId = TARGETNODE.containNodes[preNodeIndex]
-            this.nodes.forEach((node,index) => {
-              if(node.id == preNodeId) preNode = node
-            })
-            this.refreshRowNodesPosition(TARGETNODE,containNode,preNode)
-          }
-        }) 
-      },
-         //计算并列的nodes位置
-      refreshRowNodesPosition(TARGETNODE,CURNODE,PRENODE){            
-        if(PRENODE != null){
-          CURNODE.x = PRENODE.x + PRENODE.width + this.containLeft
-        }else{
-          CURNODE.x = TARGETNODE.x +this.containLeft
-        }
-        CURNODE.y = TARGETNODE.y +this.containTop
-        this.refreshContainNodesPosition(CURNODE)
-      },
+      
+      
     //1.取消选中的node节点 2. 移动viewbox
     mousedownTopoSvg(event){ 
       console.log(this.svgAttr)
