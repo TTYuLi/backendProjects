@@ -12,6 +12,8 @@
         </Option>
     </Select>
     <!-- <Button type="primary" @click="addNode">添加</Button> -->
+    <Button type="primary" @click="edit">编辑</Button>
+    <Button type="primary" @click="save">保存</Button>
     <!-- <div id="svg_dragbox" ></div> -->
     <div :id="'topoId'+topoId" class="topoWrap">
       <svg
@@ -21,11 +23,12 @@
         :viewBox="svgAttr.viewX+' '+svgAttr.viewY+' '+svgAttr.width+' '+svgAttr.height"   
         @mousedown.stop="mousedownTopoSvg($event)" 
         >
-        <!-- <defs>
+        <!-- @mousewheel="mouseWheel($event)" -->
+        <defs>
             <pattern id="Pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
               <line :x1="ele.x1" :x2="ele.x2" :y1="ele.y1" :y2="ele.y2" :stroke="ele.color" :stroke-width="ele.strokeWidth" :opacity="ele.opacity" v-for="ele in gridData" :key="ele.id"></line>
             </pattern>
-        </defs> -->
+        </defs>
         <defs id="SvgjsDefs1370">
           <!-- <marker id="arrow" markerWidth="12" markerHeight="12" refX="6" refY="6" viewBox="0 0 12 12" orient="auto"> -->
           <marker id="arrow" markerWidth="12" markerHeight="12" refX="6" refY="6" viewBox="0 0 12 12" orient="auto">
@@ -43,7 +46,10 @@
             <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
           </filter>
         </defs>
-        <g>
+        <rect v-if="isEdit" fill="url(#Pattern)" :width="svgAttr.width" :height="svgAttr.height" />  
+        <g 
+        :transform="scale"
+        >
           <!-- 节点 图片-->
           <g 
             class="nodesG" 
@@ -137,7 +143,7 @@
                 @mousedown.stop="deleteLine(key,$event)"
                 v-show="ele.showDelete"
                 > 
-                <circle r="8" cx="0" cy="-0" class="circleColor" fill="#efefef"></circle>
+                <circle r="12" cx="0" cy="-0" class="circleColor" fill="#efefef"></circle>
                 <line x1="-3" y1="-3" x2="3" y2="3" stroke="#333" stroke-width="1"></line>
                 <line x1="-3" y1="3" x2="3" y2="-3" stroke="#333" stroke-width="1"></line>
               </g>
@@ -152,7 +158,7 @@
               v-show="connectingLine.isConnecting" 
               marker-end="url(#arrow)"
               stroke="#666" 
-              stroke-width="1">
+              stroke-width="3">
               </line>
             </g>   
 
@@ -173,6 +179,9 @@
     data(){
       return {
         value: null,
+        isEdit: false,
+        scale: 'scale(1)',
+        rate: 1,
         types:[
           {label: 'IP3', value: require('../assets/imgs/svg/ip.png')},
           {label: '服务器', value: require('../assets/imgs/svg/fuwuqi.png')},
@@ -375,12 +384,30 @@
          
          
         ],
-        
+        gridData:[
+        {x1:0,x2:100,y1:20,y2:20,color:'#c0c0c0',strokeWidth:1,opacity:0.3,id:1},
+        {x1:0,x2:100,y1:40,y2:40,color:'#c0c0c0',strokeWidth:1,opacity:0.3,id:2},
+        {x1:0,x2:100,y1:60,y2:60,color:'#c0c0c0',strokeWidth:1,opacity:0.3,id:3},
+        {x1:0,x2:100,y1:80,y2:80,color:'#c0c0c0',strokeWidth:1,opacity:0.3,id:4},
+        {x1:20,x2:20,y1:0,y2:100,color:'#c0c0c0',strokeWidth:1,opacity:0.3,id:5},
+        {x1:40,x2:40,y1:0,y2:100,color:'#c0c0c0',strokeWidth:1,opacity:0.3,id:6},
+        {x1:60,x2:60,y1:0,y2:100,color:'#c0c0c0',strokeWidth:1,opacity:0.3,id:7},
+        {x1:80,x2:80,y1:0,y2:100,color:'#c0c0c0',strokeWidth:1,opacity:0.3,id:8},
+        {x1:100,x2:100,y1:0,y2:100,color:'#c0c0c0',strokeWidth:2,opacity:0.6,id:9},
+        {x1:0,x2:100,y1:100,y2:100,color:'#c0c0c0',strokeWidth:2,opacity:0.6,id:10}
+      ],
       }
     },
     methods: {
+      edit(){
+        this.isEdit = true;
+      },
+      save(){
+        this.isEdit = false;
+      },
       //鼠标滑过node 
       mouseoverNode(key,event){
+        if(!this.isEdit) return
         this.nodes[key].isTopConnectShow = true
         this.nodes[key].isBottomConnectShow = true
         // this.marker.xmarkerY = this.nodes[key].y
@@ -389,18 +416,22 @@
       },
        //获取连线终点时的node的ID值
       getConnectLine(key){
+         if(!this.isEdit) return
         this.connectingLine.endNode = this.nodes[key].id 
       },
       //鼠标划出顶部箭头时，将connectingLine.endNode再次初始化
       mouseoutLeftConnector(key){
+         if(!this.isEdit) return
         this.connectingLine.endNode = ''
       },
       mouseoutNode(key, event){
+         if(!this.isEdit) return
         this.nodes[key].isTopConnectShow = false
         this.nodes[key].isBottomConnectShow = false
       },
       // 手动画线
       drawConnectLine(key, event){
+         if(!this.isEdit) return
         // 鼠标按下
         let CONNECTLINE = this.connectingLine //绘制连线对象
         let CURNODE =  this.nodes[key] //当前点击node
@@ -559,6 +590,7 @@
       },
       //拖拽svg中的node
       dragSvgNode(key, event){
+         if(!this.isEdit) return
         let mouseX0 = event.clientX + $(document).scrollLeft()//鼠标点击下的位置
         let mouseY0 = event.clientY + $(document).scrollTop()
         let CURNODE = this.nodes[key] //点击的node对象
@@ -610,6 +642,7 @@
       },
       //contain情况下移动子节点位置
       moveContianNode(disX,disY,nodeStartPosArr){
+         if(!this.isEdit) return
         // console.log(nodeStartPosArr)
         nodeStartPosArr.forEach((ele,key) => {
           let storeInfoId = ele.id
@@ -643,12 +676,14 @@
         })
       },
       deleteNode(key,event){
+         if(!this.isEdit) return
           let node = this.nodes[key];
           this.deleteSelectNodeLink(node.id) // 删除与之连线
           this.nodes.splice(key,1)
       },
       //删除node节点及其关系
       deleteNodeAndConnetor(){
+         if(!this.isEdit) return
         document.onkeydown =(event)=>{
           let keycode =  event.which //键盘值
           if(keycode == 46 || keycode == 8) {   //在mac上del的keycode是8,这样又会引起win下输入backspace也会删除
@@ -689,6 +724,7 @@
       
       //删除选中node的连线
     deleteSelectNodeLink(selectId){
+       if(!this.isEdit) return
       let connectorObjArr = this.connectors
       let connectorsLen = connectorObjArr.length
       for(let i=0; i<connectorsLen;i++){
@@ -703,10 +739,12 @@
     },  
     // 单纯删除线
     deleteLine(key,event){
+      if(!this.isEdit) return
       this.connectors.splice(key,1)
       console.log(key)
     },
     addNode(data){
+       if(!this.isEdit) return
       // console.log(data)
       if(!data) return false;
       let node =  {
@@ -730,6 +768,7 @@
     },
     // 鼠标移入选中连线
     selectConnectorLine(key){
+       if(!this.isEdit) return
       this.connectors[key].showDelete = true;
       // if(!this.editable) return false //如果非编辑状态 不可点击
       let connectors = this.connectors
@@ -770,6 +809,7 @@
       
     //1.取消选中的node节点 2. 移动viewbox
     mousedownTopoSvg(event){ 
+       if(!this.isEdit) return
       console.log(this.svgAttr)
       let mouseX0 = event.clientX //鼠标点击下的位置
       let mouseY0 = event.clientY
@@ -805,7 +845,23 @@
         this.svgAttr.isCrosshair = false
       }
     },
+    mouseWheel(event){
+      let i = 0.1
+        if(this.rate < 0) return
+      
 
+        if(event.deltaY > 0) {
+          // 缩小
+          this.rate = this.rate - 0.1
+        } else {
+          // 放大
+          this.rate = this.rate + 0.1
+
+        }
+        
+        this.scale = 'scale(' + this.rate+ ')'
+        console.log(this.scale, event.deltaY)
+    }
     },
     created () {
     },
@@ -813,10 +869,15 @@
       // 销毁 panZoomTiger 实例
     },
     computed: {
-      
+      // scale: function(){
+      //   return this.mouseWheel()
+      // } 
+     
     },
     mounted () {
       this.deleteNodeAndConnetor()
+      //  svgPanZoom('.topoSvg')
+       
       // this.draw =  this.$svg('svg_dragbox').size(800, 600).addClass('box')
       // document.oncontextmenu = function(e){
       //         return false;
