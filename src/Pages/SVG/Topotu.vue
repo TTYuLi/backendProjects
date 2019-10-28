@@ -81,7 +81,6 @@
             </pattern>
           </defs>
           <defs id="SvgjsDefs1370">
-            <!-- <marker id="arrow" markerWidth="12" markerHeight="12" refX="6" refY="6" viewBox="0 0 12 12" orient="auto"> -->
             <marker
               id="arrow"
               markerWidth="12"
@@ -91,8 +90,6 @@
               viewBox="0 0 12 12"
               orient="auto"
             >
-              <!-- <path id="SvgjsPath1372" d="M2,2 L2,11 L10,6 L2,2" stroke="none"  fill="#666"></path> -->
-              <!-- <path id="SvgjsPath1372" d="M2,2 L2,9 L8,5 L2,2" stroke="none"  fill="#666"></path> -->
               <path id="SvgjsPath1372" d="M2,2 L2,9 L8,5 L2,2" stroke="none" fill="#666" />
             </marker>
           </defs>
@@ -116,6 +113,40 @@
             :height="svgAttr.height"
           />
           <g :transform="scale" class="svg-pan-zoom_viewport">
+            <!-- 连线 -->
+            <g
+              class="connectorsG"
+              v-for="(ele,key) in connectors"
+              :class="{active:ele.isSelect}"
+              :key="ele.id"
+              v-if="ele.type == 'Line'"
+              @mouseover.stop="selectConnectorLine(key)"
+              @mouseout.stop="cancelSelectConnectorLine(key)"
+              >
+              <!-- 连线方式一 -->
+              <path
+                class="connectorLine"
+                :stroke="ele.color"
+                :stroke-width="ele.strokeW"
+                marker-end="url(#arrow)"
+                :d="'M'+(ele.targetNode.x + ele.targetNode.width /2)+','+(ele.targetNode.y -5) +
+                'L'+(ele.sourceNode.x + ele.sourceNode.width / 2)+','+(ele.sourceNode.y + ele.sourceNode.height + 5)+
+                'Z'"
+              />
+              <!-- 删除连线 -->
+              <g
+                class="deleteArror"
+                :class="{'connector':ele.isTopConnectShow}"
+                :transform="'translate(' + (ele.targetNode.x + ele.targetNode.width /2 + ele.sourceNode.x + ele.sourceNode.width / 2) / 2 +','
+                  + (ele.targetNode.y -20 + ele.sourceNode.y + ele.sourceNode.height + 20) / 2 +')'"
+                @mousedown.stop="deleteLine(key,$event)"
+                v-show="ele.showDelete"
+               >
+                <circle r="12" cx="0" cy="-0" class="circleColor" fill="#efefef" />
+                <line x1="-3" y1="-3" x2="3" y2="3" stroke="#333" stroke-width="1" />
+                <line x1="-3" y1="3" x2="3" y2="-3" stroke="#333" stroke-width="1" />
+              </g>
+            </g>
             <!-- 节点 图片-->
             <g
               class="nodesG"
@@ -125,7 +156,7 @@
               @mouseover.stop="mouseoverNode(key,$event)"
               @mouseout.stop="mouseoutNode(key,$event)"
               :transform="'translate('+ele.x+','+ele.y+')'"
-            >
+             >
               <image
                 class="nodeImage"
                 :xlink:href="ele.icon"
@@ -135,14 +166,12 @@
                 :y="0"
                 :href="ele.icon"
               />
-              <!-- <text class="nodeName" :x="10" :y="ele.height + 20" text-anchor='start' >{{ele.name}}</text> -->
-              <text class="nodeName" :x="10" :y="ele.height + 14" text-anchor="start">{{ele.name}}</text>
-
+              <text class="nodeName" :x="-45" :y="34" text-anchor="start">{{ele.name}}</text>
               <rect
                 class="reactClass"
                 v-show="ele.isTopConnectShow"
                 :x="-2"
-                :y="-1"
+                :y="-1"  
                 :rx="0"
                 :ry="0"
                 :width="ele.width + 4"
@@ -153,7 +182,7 @@
                 :class="{'connector':ele.isTopConnectShow}"
                 :transform="'translate(' + ele.width/2 +','+ 0 +')'"
                 v-show="ele.isTopConnectShow"
-              >
+               >
                 <circle r="8" cx="0" cy="0" class="circleColor" fill="#efefef" />
                 <!-- <line x1="-4" y1="1" x2="0" y2="-5" stroke="#333" stroke-width="1"></line>
                 <line x1="4" y1="1" x2="0" y2="-5" stroke="#333" stroke-width="1"></line>-->
@@ -167,7 +196,7 @@
                 :transform="'translate('+ele.width/2+','+ele.height+')'"
                 @mousedown.stop="drawConnectLine(key,$event)"
                 @mouseout.stop="mouseoutLeftConnector(key)"
-              >
+               >
                 <circle r="8" cx="0" cy="0" class="circleColor" fill="#efefef" />
                 <line x1="-4" y1="-1" x2="0" y2="5" stroke="#333" />
                 <line x1="4" y1="-1" x2="0" y2="5" stroke="#333" />
@@ -179,44 +208,17 @@
                 :transform="'translate(' + ele.width +','+ 0 +')'"
                 @mousedown.stop="deleteNode(key,$event)"
                 v-show="ele.isTopConnectShow"
-              >
+               >
                 <circle r="8" cx="0" cy="-0" class="circleColor" fill="#efefef" />
                 <line x1="-3" y1="-3" x2="3" y2="3" stroke="#333" stroke-width="1" />
                 <line x1="-3" y1="3" x2="3" y2="-3" stroke="#333" stroke-width="1" />
               </g>
-            </g>
-            <!-- 连线 -->
-            <g
-              class="connectorsG"
-              v-for="(ele,key) in connectors"
-              :class="{active:ele.isSelect}"
-              :key="ele.id"
-              v-if="ele.type == 'Line'"
-              @mouseover.stop="selectConnectorLine(key)"
-              @mouseout.stop="cancelSelectConnectorLine(key)"
-            >
-              <!-- 连线方式一 -->
-              <path
-                class="connectorLine"
-                :stroke="ele.color"
-                :stroke-width="ele.strokeW"
-                marker-end="url(#arrow)"
-                :d="'M'+(ele.targetNode.x + ele.targetNode.width /2)+','+(ele.targetNode.y -20) +
-                'L'+(ele.sourceNode.x + ele.sourceNode.width / 2)+','+(ele.sourceNode.y + ele.sourceNode.height + 20)+
-                'Z'"
-              />
-              <!-- 删除连线 -->
-              <g
-                class="deleteArror"
-                :class="{'connector':ele.isTopConnectShow}"
-                :transform="'translate(' + (ele.targetNode.x + ele.targetNode.width /2 + ele.sourceNode.x + ele.sourceNode.width / 2) / 2 +','
-                  + (ele.targetNode.y -20 + ele.sourceNode.y + ele.sourceNode.height + 20) / 2 +')'"
-                @mousedown.stop="deleteLine(key,$event)"
-                v-show="ele.showDelete"
-              >
-                <circle r="12" cx="0" cy="-0" class="circleColor" fill="#efefef" />
-                <line x1="-3" y1="-3" x2="3" y2="3" stroke="#333" stroke-width="1" />
-                <line x1="-3" y1="3" x2="3" y2="-3" stroke="#333" stroke-width="1" />
+              <!-- 右键菜单 -->
+              <g transform="translate(65,50)" v-show="ele.showMenu">
+                <rect x="0" y="0" rx="4" ry="4" width="80" height="32" stroke="#2d8cf0" fill="#fff" @click="updateName(key,$event)"></rect>
+                <rect x="0" y="32" rx="4" ry="4" width="80" height="32" stroke="#2d8cf0" fill="#fff" @click="updateName(key,$event)"></rect>
+                <text x="15" y="20" fill="#2d8cf0" @click="updateName(key,$event)">修改名称</text>
+                <text x="15" y="52" fill="#2d8cf0" @click="deleteNode(key,$event)">删除节点</text>
               </g>
             </g>
             <!-- 动态绘制的连线 -->
@@ -350,7 +352,8 @@ export default {
           attrs: [],
           classType: "T2",
           isTopConnectShow: false,
-          isBottomConnectShow: false
+          isBottomConnectShow: false,
+          showMenu:false,
         },
         {
           name: "交换机",
@@ -364,7 +367,8 @@ export default {
           attrs: [],
           classType: "T2",
           isTopConnectShow: false,
-          isBottomConnectShow: false
+          isBottomConnectShow: false,
+          showMenu:false,
         },
         {
           name: "IP",
@@ -378,7 +382,8 @@ export default {
           attrs: [],
           classType: "T2",
           isTopConnectShow: false,
-          isBottomConnectShow: false
+          isBottomConnectShow: false,
+          showMenu:false,
         },
         {
           name: "扬声器",
@@ -392,7 +397,8 @@ export default {
           attrs: [],
           classType: "T2",
           isTopConnectShow: false,
-          isBottomConnectShow: false
+          isBottomConnectShow: false,
+          showMenu:false,
         },
         {
           name: "交换机2",
@@ -406,7 +412,8 @@ export default {
           attrs: [],
           classType: "T2",
           isTopConnectShow: false,
-          isBottomConnectShow: false
+          isBottomConnectShow: false,
+          showMenu:false,
         }
       ],
       // 连线
@@ -609,6 +616,11 @@ export default {
       this.editable = true;
       console.log("edit", this.editable);
     },
+    updateName(key, event){
+      console.log(key)
+      event.cancelBubble = true
+      event.returnValue = false;
+    },
     save() {
       this.editable = false;
       this.cancelAllNodesSelect(); //取消所有节点选中
@@ -641,6 +653,9 @@ export default {
     // 手动画线
     drawConnectLine(key, event) {
       if (!this.editable) return false;
+      this.nodes.forEach((node, index) => {
+        node.showMenu = false;
+      });
       // 鼠标按下
       let CONNECTLINE = this.connectingLine; //绘制连线对象
       let CURNODE = this.nodes[key]; //当前点击node
@@ -826,64 +841,83 @@ export default {
     //拖拽svg中的node
     dragSvgNode(key, event) {
       if (!this.editable) return false;
-      let mouseX0 = event.clientX + $(document).scrollLeft(); //鼠标点击下的位置
-      let mouseY0 = event.clientY + $(document).scrollTop();
-      let CURNODE = this.nodes[key]; //点击的node对象
-      let startX = CURNODE.x; //节点开始位置
-      let startY = CURNODE.y;
-      let curNodeId = CURNODE.id; //当前结点id
-      let nodeW = CURNODE.width; //节点 宽高
-      let nodeH = CURNODE.height;
-      let nodeStartPosArr = [];
-      this.marker.isMarkerShow = true //显示标尺
-      console.log("123", nodeStartPosArr);
+      event.cancelBubble = true
+      event.returnValue = false;
+      if(event.which == 3) {
+       document.oncontextmenu=function(ev){return false} //去掉默认右键菜单
+        // 鼠标右键
+        //  window.event.returnValue=false;  
+         event.returnValue = false;
+        this.nodes.forEach((node, index) => {
+          // 关联属性设置框
+          if (index == key) {
+            node.showMenu = true;
+          } else {
+            node.showMenu = false;
+          }
+        });
+      } else if(event.which == 1) {
+        // 鼠标左键
+        let mouseX0 = event.clientX + $(document).scrollLeft(); //鼠标点击下的位置
+        let mouseY0 = event.clientY + $(document).scrollTop();
+        let CURNODE = this.nodes[key]; //点击的node对象
+        let startX = CURNODE.x; //节点开始位置
+        let startY = CURNODE.y;
+        let curNodeId = CURNODE.id; //当前结点id
+        let nodeW = CURNODE.width; //节点 宽高
+        let nodeH = CURNODE.height;
+        let nodeStartPosArr = [];
+        this.marker.isMarkerShow = true //显示标尺
+        console.log("123", nodeStartPosArr);
 
-      nodeStartPosArr.push({ id: CURNODE.id, x: CURNODE.x, y: CURNODE.y });
+        nodeStartPosArr.push({ id: CURNODE.id, x: CURNODE.x, y: CURNODE.y });
 
-      this.nodes.forEach((node, key) => {
-        // 关联属性设置框
-        if (node.id == CURNODE.id) {
-          this.selectNodeData = node;
-        }
-      });
-      let endX, endY;
-      document.onmousemove = event => {
-        let disX = event.clientX - mouseX0 + $(document).scrollLeft(); //移动位置
-        let disY = event.clientY - mouseY0 + $(document).scrollTop();
-        endX = startX + disX; //最终位置
-        endY = startY + disY;
-        let n1 = Math.floor(endX / 20)  //grid宽高的整数倍
-           let n2 = Math.floor(endY / 20) 
-           if(n1 <= 0 ) n1 = 0
-           if(n2 <= 0)  n2 = 0
-           if(endX <= 0) {
-            endX = 0 
-            disX = -startX
-           }
-           if(endY <= 0 ){
-            endY = 0 
-            disY = -startY
-           }
-           this.marker.isMarkerShow = true  //显示标尺        
-           this.marker.xmarkerY = n2 * 20   //标尺的移动位置，以每格20的距离移动
-           this.marker.ymarkerX = n1 * 20   
-        this.moveContianNode(disX, disY, nodeStartPosArr); //根据保存的数组数据移动相关节点
-        this.refreshConnectorsData(); //及时更新连线数据
-      };
-      document.onmouseup = event => {
-        document.onmousemove = null;
-        document.onmouseup = null;
-        this.marker.isMarkerShow = false; //隐藏标尺
-        let NodeEndX = this.marker.ymarkerX; //最终位置为标尺的位置 最终节点位置
-        let NodeEndY = this.marker.xmarkerY;
-        //  let disX = NodeEndX - startX
-        //  let disY = NodeEndY - startY
-        let disX = endX - startX;
-        let disY = endY - startY;
-        let mouseDisX = event.clientX - mouseX0;
-        let mouseDisY = event.clientY - mouseY0;
-        this.refreshConnectorsData(); //最后刷新连线
-      };
+        this.nodes.forEach((node, key) => {
+          // 关联属性设置框
+          if (node.id == CURNODE.id) {
+            this.selectNodeData = node;
+          }
+        });
+        let endX, endY;
+        document.onmousemove = event => {
+          let disX = event.clientX - mouseX0 + $(document).scrollLeft(); //移动位置
+          let disY = event.clientY - mouseY0 + $(document).scrollTop();
+          endX = startX + disX; //最终位置
+          endY = startY + disY;
+          let n1 = Math.floor(endX / 20)  //grid宽高的整数倍
+            let n2 = Math.floor(endY / 20) 
+            if(n1 <= 0 ) n1 = 0
+            if(n2 <= 0)  n2 = 0
+            if(endX <= 0) {
+              endX = 0 
+              disX = -startX
+            }
+            if(endY <= 0 ){
+              endY = 0 
+              disY = -startY
+            }
+            this.marker.isMarkerShow = true  //显示标尺        
+            this.marker.xmarkerY = n2 * 20   //标尺的移动位置，以每格20的距离移动
+            this.marker.ymarkerX = n1 * 20   
+          this.moveContianNode(disX, disY, nodeStartPosArr); //根据保存的数组数据移动相关节点
+          this.refreshConnectorsData(); //及时更新连线数据
+        };
+        document.onmouseup = event => {
+          document.onmousemove = null;
+          document.onmouseup = null;
+          this.marker.isMarkerShow = false; //隐藏标尺
+          let NodeEndX = this.marker.ymarkerX; //最终位置为标尺的位置 最终节点位置
+          let NodeEndY = this.marker.xmarkerY;
+          //  let disX = NodeEndX - startX
+          //  let disY = NodeEndY - startY
+          let disX = endX - startX;
+          let disY = endY - startY;
+          let mouseDisX = event.clientX - mouseX0;
+          let mouseDisY = event.clientY - mouseY0;
+          this.refreshConnectorsData(); //最后刷新连线
+        };
+
+      }
     },
     //存入node及其子节点位置信息
     storeCurnodeStartPosition(CURNODE, startNodePosition) {
@@ -926,6 +960,9 @@ export default {
     },
     deleteNode(key, event) {
       if (!this.editable) return false;
+      this.nodes.forEach((node, index) => {
+        node.showMenu = false;
+      });
       let node = this.nodes[key];
       this.deleteSelectNodeLink(node.id); // 删除与之连线
       this.nodes.splice(key, 1);
@@ -985,6 +1022,9 @@ export default {
     // 单纯删除线
     deleteLine(key, event) {
       if (!this.editable) return false;
+      this.nodes.forEach((node, index) => {
+        node.showMenu = false;
+      });
       this.connectors.splice(key, 1);
       console.log(key);
     },
@@ -992,6 +1032,9 @@ export default {
       if (!this.editable) return false;
       // console.log(data)
       if (!data) return false;
+      this.nodes.forEach((node, index) => {
+        node.showMenu = false;
+      });
       let node = {
         name: data.label,
         id: this.GenNonDuplicateID(6),
@@ -1051,6 +1094,9 @@ export default {
     //拖拽shapeBar中的node
     dragShapeNode(nodeData, key, event) {
       console.log(nodeData, key, event)
+      this.nodes.forEach((node, index) => {
+        node.showMenu = false;
+      });
       let NODE = nodeData[key]; // 被点击的节点node
       let toolbarName = NODE.type;
       let toolbarIcon = NODE.icon;
@@ -1138,6 +1184,9 @@ export default {
     //1.取消选中的node节点 2. 移动viewbox
     mousedownTopoSvg(event) {
       if (!this.editable) return false;
+      this.nodes.forEach((node, index) => {
+        node.showMenu = false;
+      });
       console.log(this.svgAttr);
       let mouseX0 = event.clientX; //鼠标点击下的位置
       let mouseY0 = event.clientY;
@@ -1267,6 +1316,7 @@ export default {
       this.$nextTick(()=>{
         // let width = this.$refs.topoWrap.offsetWidth - 2
         // let height = this.$refs.topoWrap.offsetHeight - 2
+
         let ele = `#topoId${this.topoId}`
         let topoW = $(ele).width()
         let topoH = $(ele).height()
@@ -1276,6 +1326,7 @@ export default {
         this.svgAttr.height = topoH
         this.svgAttr.minW = topoW
         this.svgAttr.minH = topoH
+
         // this.marker.xmarkerX = width
         // this.marker.ymarkerY = height
         // this.svgAttr.width = width

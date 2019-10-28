@@ -2,7 +2,7 @@
     <div onselectstart="{return false;}">
 
         <h1>地铁线路实时动态图</h1> {{active}}
-        <div class="train" id="train">
+        <div class="train" id="train" @mousedown="boxSelection($event)">
             <div class="lines" v-for="(lines,index) in all" :key="index">
                 <div class="lines_title">{{ lines.line.lineName}}:</div>
                 <div class="Train_contains">
@@ -44,50 +44,50 @@ import { setInterval } from 'timers';
 import data from './subway.json';
 
 export default {
-    data(){
-        return{
-            // all: this.$store.state.parameter.lineStation,
-            all:data,
-            choosedData: [],
-            lines:[],
-            stations:[],
-            positions: [
-                {left: 0, bottom: 20, lineId: '01', stationAId: '0105', stationBId: '0106', status: 0, subway: 1, flag: true},
-                {left: 0, bottom: 20, lineId: '01', stationAId: '0124', stationBId: '0125', status: 1, subway: 2, flag: true},
-                {left: 0, bottom: 20, lineId: '02', stationAId: '0201', stationBId: '0202', status: 0, subway: 3, flag: true},
-                {left: 0, bottom: 20, lineId: '02', stationAId: '0205', stationBId: '0206', status: 1, subway: 3, flag: true},
-                {left: 0, bottom: 20, lineId: '04', stationAId: '0421', stationBId: '0423', status: 1, subway: 3, flag: true},
-                // {left: 0, bottom: 20, lineId: '04', stationAId: '0427', stationBId: '0429', status: 0, subway: 3, flag: true},
-                // {left: 0, bottom: 20, lineId: '05', stationAId: '0521', stationBId: '0523', status: 1, subway: 3, flag: true},
-                // {left: 0, bottom: 20, lineId: '05', stationAId: '0535', stationBId: '0537', status: 0, subway: 3, flag: true},
-            ],
-            active: [],
-            pressed: false
-        }
+  data(){
+      return{
+          // all: this.$store.state.parameter.lineStation,
+          all:data,
+          choosedData: [],
+          lines:[],
+          stations:[],
+          positions: [
+              {left: 0, bottom: 20, lineId: '01', stationAId: '0105', stationBId: '0106', status: 0, subway: 1, flag: true},
+              {left: 0, bottom: 20, lineId: '01', stationAId: '0124', stationBId: '0125', status: 1, subway: 2, flag: true},
+              {left: 0, bottom: 20, lineId: '02', stationAId: '0201', stationBId: '0202', status: 0, subway: 3, flag: true},
+              {left: 0, bottom: 20, lineId: '02', stationAId: '0205', stationBId: '0206', status: 1, subway: 3, flag: true},
+              {left: 0, bottom: 20, lineId: '04', stationAId: '0421', stationBId: '0423', status: 1, subway: 3, flag: true},
+              // {left: 0, bottom: 20, lineId: '04', stationAId: '0427', stationBId: '0429', status: 0, subway: 3, flag: true},
+              // {left: 0, bottom: 20, lineId: '05', stationAId: '0521', stationBId: '0523', status: 1, subway: 3, flag: true},
+              // {left: 0, bottom: 20, lineId: '05', stationAId: '0535', stationBId: '0537', status: 0, subway: 3, flag: true},
+          ],
+          active: [],
+          pressed: false
+      }
+  },
+  methods:{
+    move(data){
+      if (!this.pressed) return 
+      console.log(data)
     },
-    methods:{
-      move(data){
-        if (!this.pressed) return 
-        console.log(data)
-      },
-      get_stationId(id,e,index){
-        let _temp = null
-        let _index = this.choosedData.indexOf(id)
-        if(_index>-1) {
-           e.target.style.backgroundColor = '#1E90FF';
-           this.choosedData.splice(_index,1)
-        } else {
-           e.target.style.backgroundColor = 'red';
-           this.choosedData.push(id)
-        }
-         
+    get_stationId(id,e,index){
+      let _temp = null
+      let _index = this.choosedData.indexOf(id)
+      if(_index>-1) {
+          e.target.style.backgroundColor = '#1E90FF';
+          this.choosedData.splice(_index,1)
+      } else {
+          e.target.style.backgroundColor = 'red';
+          this.choosedData.push(id)
+      }
         
-        e.target.style.cursor = 'pointer'; 
-        console.log("id",id,this.choosedData,e.target);
-         
+      
+      e.target.style.cursor = 'pointer'; 
+      console.log("id",id,this.choosedData,e.target);
+        
 
 
-      },
+    },
     setPositions() {
       this.active = [];
       this.all.map(line => {
@@ -196,53 +196,57 @@ export default {
       }
       return scrollTop
     },
-    boxSelection(){
-          // var stateBar = document.getElementById("bottom");
-          var train = document.getElementById('train');
-          document.onmousedown = (e) =>{
-            this.pressed = true
-              console.log('开始',e , e.clientY, e.clientY)
-          
-          var posx = e.clientX ;
-          var posy = e.clientY ;
-          var div = document.createElement("div");
-          div.className = "tempDiv";
-          div.style.left = posx+"px";
-          div.style.top = posy+"px" + this.scrollTop();
-          train.appendChild(div)
-          document.onmousemove = (ev) =>{
+    boxSelection(e){
+      // var stateBar = document.getElementById("bottom");
+      var train = document.getElementById('train');
+      this.pressed = true
+      console.log('开始',e , e.clientY, e.clientY)
+      
+      var posx = e.clientX ;
+      var posy = e.clientY ;
+      var div = document.createElement("div");
+      div.className = "tempDiv";
+      div.style.left = posx+"px";
+      div.style.top = posy+"px" + this.scrollTop();
+      train.appendChild(div)
+      document.onmousemove = (ev) =>{
+        
+        div.style.left = Math.min(ev.clientX, posx) + "px";
+        div.style.top = Math.min(ev.clientY, posy) + this.scrollTop() + "px";
+        div.style.width = Math.abs(posx - ev.clientX)+"px";
+        div.style.height = Math.abs(posy - ev.clientY)+"px";
+        // stateBar.innerHTML = "MouseX: " + ev.clientX + "<br/>MouseY: " + ev.clientY;
+        document.onmouseup = (event) =>{
             
-            div.style.left = Math.min(ev.clientX, posx) + "px";
-            div.style.top = Math.min(ev.clientY, posy) + this.scrollTop() + "px";
-            div.style.width = Math.abs(posx - ev.clientX)+"px";
-            div.style.height = Math.abs(posy - ev.clientY)+"px";
-            // stateBar.innerHTML = "MouseX: " + ev.clientX + "<br/>MouseY: " + ev.clientY;
-            document.onmouseup = (event) =>{
-              this.pressed = false;
-              console.log('结束', event.clientX, event.clientY)
-            div.parentNode.removeChild(div);
-            document.onmousemove = null;
-            document.onmouseup = null;
-            }
-          }
-          }
+          this.pressed = false;
+          console.log('结束', event.clientX, event.clientY)
+          div.parentNode.removeChild(div);
+          document.onmousedown = null;
+          document.onmousemove = null;
+          document.onmouseup = null;
+        }
+      }
     }
 
-    },
-    created(){},
-    mounted(){
-      this.mockDatas()
-      this.boxSelection()
-        // this.get_lineAndStation();
-        console.log("线路和车站：",this.all);
-    }
+  },
+  created(){},
+  mounted(){
+    this.mockDatas()
+    // this.boxSelection()
+      // this.get_lineAndStation();
+      console.log("线路和车站：",this.all);
+  },
+  beforeDestroy(){
+    clearInterval(this.timer)
+    this.timer = null
+  },
 }
 </script>
 
 <style type="text/css">
 
   .tempDiv{
-  border:1px dashed blue;
+  border:2px dashed blue;
   background:#5a72f8;
   position:absolute;
   width:0;
