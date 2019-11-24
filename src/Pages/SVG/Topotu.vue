@@ -80,6 +80,9 @@
               />
             </pattern>
           </defs>
+          <defs>
+            <path id="arrow1" d="M2,2 L2,9 L8,5 L2,2" stroke="none" fill="#666" />
+          </defs>
           <defs id="SvgjsDefs1370">
             <marker
               id="arrow"
@@ -88,8 +91,9 @@
               refX="6"
               refY="6"
               viewBox="0 0 12 12"
-              orient="auto"
+              orient="auto-start-reverse"
             >
+              <!-- orient="auto" -->
               <path id="SvgjsPath1372" d="M2,2 L2,9 L8,5 L2,2" stroke="none" fill="#666" />
             </marker>
           </defs>
@@ -128,11 +132,26 @@
                 class="connectorLine"
                 :stroke="ele.color"
                 :stroke-width="ele.strokeW"
-                marker-end="url(#arrow)"
                 :d="'M'+(ele.targetNode.x + ele.targetNode.width /2)+','+(ele.targetNode.y -5) +
                 'L'+(ele.sourceNode.x + ele.sourceNode.width / 2)+','+(ele.sourceNode.y + ele.sourceNode.height + 5)+
                 'Z'"
               />
+              <!-- <g :transform="'rotate('+ getTanDeg( (ele.targetNode.y -5 -ele.sourceNode.y + ele.sourceNode.height + 5)/(ele.targetNode.x + ele.targetNode.width /2-ele.sourceNode.x + ele.sourceNode.width / 2))+')'"> -->
+              <!-- <path d="m2,2 L2,9 L8,5 L2,2" stroke="none" fill="#666" /> -->
+              <!-- :cx="ele.targetNode.x + ele.targetNode.width /2" -->
+              <!-- :cy="ele.targetNode.y -5" -->
+              <path 
+              :transform="'rotate('+ getTanDeg( (ele.targetNode.y -5 -ele.sourceNode.y + ele.sourceNode.height + 5)/(ele.targetNode.x + ele.targetNode.width /2-ele.sourceNode.x + ele.sourceNode.width / 2))+ ' '
+              + ele.targetNode.x + ele.targetNode.width /2 + ' ' +ele.targetNode.y -5 +')'"
+               :d="'M'+(ele.targetNode.x + ele.targetNode.width /2)+','+(ele.targetNode.y -5) +
+                'L'+(ele.targetNode.x + ele.targetNode.width /2 -5)+','+(ele.targetNode.y -5 -5)+
+                'L'+(ele.targetNode.x + ele.targetNode.width /2 -5)+','+(ele.targetNode.y -5 +5)+
+                'L'+(ele.targetNode.x + ele.targetNode.width /2)+','+(ele.targetNode.y -5)
+                "  stroke="none" fill="#666" />
+
+              <!-- </g> -->
+                <!-- fill="url(#arrow1)" -->
+                <!-- marker-end="url(#arrow)" -->
               <!-- 删除连线 -->
               <g
                 class="deleteArror"
@@ -612,6 +631,11 @@ export default {
     };
   },
   methods: {
+    getTanDeg(tan) {
+        var result = Math.atan(tan) / (Math.PI / 180);
+        result = Math.round(result);
+        return result;
+    },
     edit() {
       this.editable = true;
       console.log("edit", this.editable);
@@ -1348,7 +1372,32 @@ export default {
     this.topoId = this.GenNonDuplicateID(5)
     this.initTopoWH() //初始化topo组件宽高
     //  svgPanZoom('.topoSvg')
+
+
+    // d3画箭头
+    // var svg = d3.select(".topoWrap")
+    // var defs = svg.append("defs");
+
+    // var arrowMarker = defs.append("marker")
+    //       .attr("id","arrow")
+    //       .attr("markerUnits","strokeWidth")
+    //       .attr("markerWidth","8")
+    //       .attr("markerHeight","8")
+    //       .attr("viewBox","0 0 12 12")
+    //       .attr("refX","13")
+    //       .attr("refY","6")
+    //       .attr("orient","auto");
+
+    // var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
+    // arrowMarker.append("path")
+    //       .attr("d",arrow_path)
+    //       .attr("fill","#999");
+
+    //  d3.selectAll("path")
+    //   .attr("marker-end","url(#arrow)");
   }
+    
 };
 </script>
 
