@@ -1,6 +1,7 @@
 <template>
   <div style="height: 100%">
-    <Select
+    <image src="../../assets/icon_anquan.svg"/>
+    <!-- <Select
       v-model="value"
       style="width:400px; margin-right: 20px;"
       label-in-value
@@ -11,7 +12,7 @@
         <img style="height: 25px; margin-right: 10px;" :src="item.value" />
         <span>{{ item.label }}</span>
       </Option>
-    </Select>
+    </Select> -->
     <Button type="primary" @click="edit">编辑</Button>
     <Button type="primary" @click="save">保存</Button>
     <Button type="primary" @click="saveAsPng">下载为图片</Button>
@@ -28,7 +29,7 @@
           <div class="svgHeadItemImg" :class="ele.className"></div>
         </li>
       </ul>
-      <!-- <ul class="svgHeadItemLst">
+      <ul class="svgHeadItemLst">
         <li class="svgToolBarItem" @click="saveTopoJson" title="保存">
           <i class="fa fa-save svgToolBarIcon"></i>
           <span class="svgToolBarTxt hidden-xs-only">保存</span>
@@ -45,7 +46,7 @@
             <i class="fa fa-file-image-o svgToolBarIcon"></i>
             <span  class="svgToolBarTxt hidden-xs-only">保存图片</span>
         </li>
-      </ul> -->
+      </ul>
     </div>
     <div class="svgMain">
       <v-shapebar @click="dragShapeNode" v-show="editable"></v-shapebar>
@@ -112,7 +113,9 @@
             :width="svgAttr.width"
             :height="svgAttr.height"
           />
-          <g :transform="scale" class="svg-pan-zoom_viewport">
+          <g :transform="scale" 
+            >
+            <!-- class="svg-pan-zoom_viewport" -->
             <!-- 连线 -->
             <g
               class="connectorsG"
@@ -251,12 +254,24 @@
 
 <script>
 import vShapebar from "./vShapebar";
+import SB0 from '../../assets/imgs/svg/shebei.png';
+import FWQ0 from '../../assets/imgs/svg/fuwuqi.png';
+import JHJ0 from '../../assets/imgs/svg/jiaohuanji.png';
+import IP0 from '../../assets/imgs/svg/ip.png';
+import YSQ0 from '../../assets/imgs/svg/yangshengqi.png';
 export default {
   components: { vShapebar: vShapebar },
   data() {
     return {
       value: null,
       editable: true,
+      images: {
+        'SB0': SB0,
+        'FWQ0': FWQ0,
+        'JHJ0': JHJ0,
+        'IP0': IP0,
+        'YSQ0': YSQ0,
+      },
       svgToolbar: [
         { name: "默认模式", className: "toolbar-default", isActive: true },
         {
@@ -345,7 +360,8 @@ export default {
           id: 1,
           x: 300,
           y: 20,
-          icon: require("../../assets/imgs/svg/fuwuqi.png"),
+          // icon: require("../../assets/imgs/svg/fuwuqi.png"),
+          icon: FWQ0,
           width: 60,
           height: 60,
           containNodes: [2, 3, 4],
@@ -360,7 +376,9 @@ export default {
           id: 2,
           x: 50,
           y: 150,
-          icon: require("../../assets/imgs/svg/jiaohuanji.png"),
+          // icon: require("../../assets/imgs/svg/jiaohuanji.png"),
+          icon: YSQ0,
+          path: 'YSQ0',
           width: 60,
           height: 60,
           containNodes: [],
@@ -375,7 +393,8 @@ export default {
           id: 3,
           x: 200,
           y: 150,
-          icon: require("../../assets/imgs/svg/ip.png"),
+          // icon: require("../../assets/imgs/svg/ip.png"),
+          icon:IP0,
           width: 60,
           height: 60,
           containNodes: [],
@@ -390,7 +409,8 @@ export default {
           id: 4,
           x: 400,
           y: 150,
-          icon: require("../../assets/imgs/svg/yangshengqi.png"),
+          // icon: require("../../assets/imgs/svg/yangshengqi.png"),
+          icon: YSQ0,
           width: 60,
           height: 60,
           containNodes: [5],
@@ -405,7 +425,8 @@ export default {
           id: 5,
           x: 200,
           y: 300,
-          icon: require("../../assets/imgs/svg/jiaohuanji.png"),
+          // icon: require("../../assets/imgs/svg/jiaohuanji.png"),
+          icon: JHJ0,
           width: 60,
           height: 60,
           containNodes: [],
@@ -678,26 +699,7 @@ export default {
         4 +
         $(document).scrollTop() +
         this.svgAttr.viewY;
-      // 获取缩放值和位移值
-      let transformArr = $(".svg-pan-zoom_viewport")
-        .css("transform")
-        .substring(7, "matrix(1, 0, 0, 1, 0, 0)".length - 1)
-        .split(",");
-      let scaleX = transformArr[0];
-      let scaleY = transformArr[3];
-      let tanslateX = transformArr[4];
-      let tanslateY = transformArr[5];
-      // // 重新计算 x1 y1 坐标值
-      // x1 = Number(x1) / Number(scaleX) - Number(tanslateX)
-      // y1 = Number(y1) / Number(scaleY) - Number(tanslateY)
-      // console.log(x1, y1, Number(x1) * Number(scaleX) )
-      // x1 =( Number(x1) - Number(tanslateX) )/ Number(scaleX)
-      // y1 = (Number(y1) - Number(tanslateY) )/ Number(scaleY)
-
-      //  x1 =( Number(x1) * Number(scaleX) - Number(tanslateX) )
-      // y1 = (Number(y1) *  Number(scaleY) - Number(tanslateY) )
-
-      // console.log(x1, y1)
+      
       CONNECTLINE.isConnecting = true; //显示绘制连线
       CONNECTLINE.x1 = x1;
       CONNECTLINE.y1 = y1;
@@ -868,7 +870,6 @@ export default {
         let nodeH = CURNODE.height;
         let nodeStartPosArr = [];
         this.marker.isMarkerShow = true //显示标尺
-        console.log("123", nodeStartPosArr);
 
         nodeStartPosArr.push({ id: CURNODE.id, x: CURNODE.x, y: CURNODE.y });
 
@@ -1091,7 +1092,7 @@ export default {
       });
       this.selectNodeData = {};
     },
-    //拖拽shapeBar中的node
+    //拖拽shapeBar中的node, 新增节点
     dragShapeNode(nodeData, key, event) {
       console.log(nodeData, key, event)
       this.nodes.forEach((node, index) => {
@@ -1141,7 +1142,8 @@ export default {
           let type = NODE.type;
           let name = NODE.type + "_" + NODE.num;
           NODE.num++;
-          let id = GenNonDuplicateID(5);
+          // let id = GenNonDuplicateID(5);
+          let id =  GenNonDuplicateID2(this.nodes.length) ;
           let nodeEndX = this.marker.ymarkerX;
           let nodeEndY = this.marker.xmarkerY;
           let svgNode = {
@@ -1151,16 +1153,17 @@ export default {
             x: nodeEndX,
             y: nodeEndY,
             icon: NODE.icon,
+            path: NODE.path,
             width: NODE.width,
             height: NODE.height,
             initW: NODE.width,
             initH: NODE.height,
             classType: NODE.classType,
-            isLeftConnectShow: false,
-            isRightConnectShow: false,
-            containNodes: [],
+            isTopConnectShow: false,
+            isBottomConnectShow: false,
             attrs: []
           };
+          console.log('id',  id)
           this.marker.isMarkerShow = false; //标尺取消显示
           this.nodes.push(svgNode); //创建一个svg Node
         }
@@ -1179,6 +1182,25 @@ export default {
             .substr(3, randomLength) + Date.now()
         ).toString(36);
       }
+      // 生成唯一 递增 id
+      let GenNonDuplicateID2 = (id) =>{
+        let currentIds = this.nodes.map(v => v.id)
+        let index = currentIds.indexOf(id)
+        //  console.log(index,id, 'index')
+         if (index > -1) {
+           // 有重复id
+           console.log(1, id)
+           return GenNonDuplicateID2(id + 1)
+          }else {
+           console.log(2, id)
+
+           return id;
+          }
+      }
+      
+      //   let id =  this.nodes.length
+      // console.log( GenNonDuplicateID2(id) )
+
     },
 
     //1.取消选中的node节点 2. 移动viewbox
@@ -1249,7 +1271,8 @@ export default {
     },
     //保存topo的json数据
     saveTopoJson() {
-      console.log(JSON.stringify({ nodes:this.nodes, connectors: this.connectors}) )
+      console.log(this.nodes)
+      // console.log(JSON.stringify({ nodes:this.nodes, connectors: this.connectors}) )
     },
     saveTopoImage() {
       let maxW = 0;

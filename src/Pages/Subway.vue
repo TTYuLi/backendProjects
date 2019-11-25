@@ -209,21 +209,21 @@ export default {
       div.style.left = posx+"px";
       div.style.top = posy+"px" + this.scrollTop();
       train.appendChild(div)
-      document.onmousemove = (ev) =>{
+      train.onmousemove = (ev) =>{
         
         div.style.left = Math.min(ev.clientX, posx) + "px";
         div.style.top = Math.min(ev.clientY, posy) + this.scrollTop() + "px";
         div.style.width = Math.abs(posx - ev.clientX)+"px";
         div.style.height = Math.abs(posy - ev.clientY)+"px";
         // stateBar.innerHTML = "MouseX: " + ev.clientX + "<br/>MouseY: " + ev.clientY;
-        document.onmouseup = (event) =>{
+        train.onmouseup = (event) =>{
             
           this.pressed = false;
           console.log('结束', event.clientX, event.clientY)
           div.parentNode.removeChild(div);
-          document.onmousedown = null;
-          document.onmousemove = null;
-          document.onmouseup = null;
+          train.onmousedown = null;
+          train.onmousemove = null;
+          train.onmouseup = null;
         }
       }
     }

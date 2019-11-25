@@ -19,7 +19,6 @@ const Routes = [
   { path: '/subway', title: '实时地铁图', name: 'subway', component: Subway, icon: 'ios-train'},
   // { path: '/file', title: '文件读取', name: 'file', component: File, icon: 'ios-paper-outline'},
   { path: '/test', title: '测试', name: 'test', component: Test, icon: 'ios-bug-outline'},
-  { path: '/map', title: 'canvas', name: 'map', component: Map, icon: 'md-train'},
   { path: '/svg', title: 'svg', name: 'svg',  component: SVG , icon: 'md-train',children: [
     {path: '', component: SvgSubway},
     {path: '/svg/topotu', name: 'topotu', component: SvgTopotu},

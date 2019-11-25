@@ -31,6 +31,7 @@ export default {
   width: 145px;
   height: 100%;
   background-color: rgb(40, 43, 47);
+  user-select: none;
 }
 .sider .logo {
   width: 145px;
@@ -52,6 +53,7 @@ export default {
   border-bottom: 1px solid rgb(75, 75, 75);
 }
 .menu-item>a {
+  width: 145px;
   padding-left: 16px;
   display: block;
   color: #fff;
