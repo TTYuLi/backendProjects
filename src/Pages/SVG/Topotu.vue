@@ -135,6 +135,7 @@
                 class="connectorLine"
                 :stroke="ele.color"
                 :stroke-width="ele.strokeW"
+                marker-end="url(#arrow)"
                 :d="'M'+(ele.targetNode.x + ele.targetNode.width /2)+','+(ele.targetNode.y -5) +
                 'L'+(ele.sourceNode.x + ele.sourceNode.width / 2)+','+(ele.sourceNode.y + ele.sourceNode.height + 5)+
                 'Z'"
@@ -143,14 +144,14 @@
               <!-- <path d="m2,2 L2,9 L8,5 L2,2" stroke="none" fill="#666" /> -->
               <!-- :cx="ele.targetNode.x + ele.targetNode.width /2" -->
               <!-- :cy="ele.targetNode.y -5" -->
-              <path 
+              <!-- <path 
               :transform="'rotate('+ getTanDeg( (ele.targetNode.y -5 -ele.sourceNode.y + ele.sourceNode.height + 5)/(ele.targetNode.x + ele.targetNode.width /2-ele.sourceNode.x + ele.sourceNode.width / 2))+ ' '
               + ele.targetNode.x + ele.targetNode.width /2 + ' ' +ele.targetNode.y -5 +')'"
                :d="'M'+(ele.targetNode.x + ele.targetNode.width /2)+','+(ele.targetNode.y -5) +
                 'L'+(ele.targetNode.x + ele.targetNode.width /2 -5)+','+(ele.targetNode.y -5 -5)+
                 'L'+(ele.targetNode.x + ele.targetNode.width /2 -5)+','+(ele.targetNode.y -5 +5)+
                 'L'+(ele.targetNode.x + ele.targetNode.width /2)+','+(ele.targetNode.y -5)
-                "  stroke="none" fill="#666" />
+                "  stroke="none" fill="#666" /> -->
 
               <!-- </g> -->
                 <!-- fill="url(#arrow1)" -->

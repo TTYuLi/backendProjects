@@ -2,8 +2,8 @@
   <div class="sider">
     <div class="logo" >LOGO</div>
     <div class="menu">
-      <div class="menu-item" v-for="item in Navs" >
-        <router-link :to="item.path">
+      <div class="menu-item" v-for="item in Navs" v-if="item.path" >
+        <router-link :to="item.path" >
           <Icon :type="item.icon" size="18" style="margin-right: 10px;"/>
           {{item.title}}
           <Icon class="arrow-right" type="ios-arrow-forward" style="float: right; margin-right: 15px;margin-top: 13px;"/>

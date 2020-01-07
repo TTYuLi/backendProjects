@@ -24,6 +24,35 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/3.0.13/svg.js"></script> -->
     <script src="/static/svg-pan-zoom.js"></script> <!-- 这个有用 -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script type="x-shader/x-vertex" id="vertexshader">
+
+			attribute float scale;
+
+			void main() {
+
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+				gl_PointSize = scale * ( 300.0 / - mvPosition.z );
+
+				gl_Position = projectionMatrix * mvPosition;
+
+			}
+
+		</script>
+
+		<script type="x-shader/x-fragment" id="fragmentshader">
+
+			uniform vec3 color;
+
+			void main() {
+
+				if ( length( gl_PointCoord - vec2( 0.5, 0.5 ) ) > 0.475 ) discard;
+
+				gl_FragColor = vec4( color, 1.0 );
+
+			}
+
+		</script>
 
   </body>
 </html>

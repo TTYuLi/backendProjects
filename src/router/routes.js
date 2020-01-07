@@ -1,3 +1,5 @@
+const Login = () => import('@/Pages/Login')
+
 const OverView = () => import('@/Pages/OverView')
 const Photo = () => import('@/Pages/Photo')
 const Calendar = () => import('@/Pages/Calendar')
@@ -12,7 +14,7 @@ const SvgSubway = () => import('@/Pages/SVG/SvgSubway')
 const SvgSubway2 = () => import('@/Pages/SVG/SvgSubway2')
 
 const Routes = [
-  // {path: '/login', title: '登录', name: 'login', component: ''},
+  {path: '', redirect: '/photo'},
   { path: '/photo', title: '证件照', name: 'photo', component: Photo,  icon: 'ios-images-outline' },
   { path: '/calcendar', title: '日历', name: 'calcendar', component: Calendar,  icon: 'ios-calendar-outline'} ,
   { path: '/echarts', title: '图表', name: 'echarts',  icon: 'ios-stats-outline'},

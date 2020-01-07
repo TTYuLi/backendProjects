@@ -15,6 +15,8 @@ import Routes from './routes.js'
 // import SvgTopotu from '@/Pages/SVG/Topotu.vue'
 // import SvgSubway from '@/Pages/SVG/SvgSubway.vue'
 // import SvgSubway2 from '@/Pages/SVG/SvgSubway2.vue'
+const Login = () => import('@/Pages/Login')
+const Main = () => import('@/Pages/Main')
 
 const OverView = () => import('@/Pages/OverView')
 const Photo = () => import('@/Pages/Photo')
@@ -54,11 +56,13 @@ Vue.use(Router)
 // ]
 export default new Router({
   routes: [
+    {path: '/login', title: '登录', name: 'login', component: Login},
     {
-      path: '/',
-      name: 'OverView',
-      component: OverView
-    }, ...Routes
+      path: '',
+      name: 'Main',
+      component: Main,
+      children: Routes
+    }, 
   ],
   mode: 'history'
 })

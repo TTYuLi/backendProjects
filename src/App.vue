@@ -1,23 +1,18 @@
 <template>
   <div id="app">
-    <Header></Header>
+      <router-view/>
+    <!-- <Header></Header>
     <Sider></Sider>
     <Main>
     </Main>
-      <!-- <router-view/> -->
-    <Footer></Footer>
+    <Footer></Footer> -->
   </div>
 </template>
 
 <script>
-import Header from '@/components/Header'
-import Sider from '@/components/Sider'
-import Main from '@/components/Main'
-import Footer from '@/components/Footer'
-
+ 
 export default {
   name: 'App',
-  components: {Main, Sider, Header,Footer},
   data(){
     return {
       

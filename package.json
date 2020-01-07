@@ -5,7 +5,7 @@
   "author": "zhangtingwei <zhangtingwei526@foxmail.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js --open",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "e2e": "node test/e2e/runner.js",
@@ -21,9 +21,11 @@
     "less-loader": "^5.0.0",
     "lodash": "^4.17.15",
     "save-dev": "0.0.1-security",
+    "screenfull": "^5.0.0",
     "svg.draggable.js": "^2.2.2",
     "svg.pan-zoom.js": "^2.8.0",
     "svg.select.js": "^3.0.1",
+    "three": "^0.110.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.1.2"
